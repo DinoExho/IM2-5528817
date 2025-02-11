@@ -10,7 +10,7 @@ CREATE TABLE "transaction_records" (
   "transaction_id" serial,
   "account_id" integer,
   "transaction_type" varchar,
-  "transaction_timestamp" datetime,
+  "transaction_timestamp" timestamp,
   "amount" money,
   "payment_method" varchar,
   "description" text

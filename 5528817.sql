@@ -30,7 +30,7 @@ CREATE TABLE "loan_information" (
   "loan_id" serial,
   "account_id" integer,
   "original_amount" money,
-  "interest_rate" float,
+  "interest_rate" decimal,
   "loan_term" varchar,
   "start_date" date,
   "end_date" date

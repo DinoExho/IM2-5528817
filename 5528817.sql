@@ -1,3 +1,28 @@
+CREATE ROLE customers;
+CREATE ROLE bank_managers;
+CREATE ROLE tellers;
+CREATE ROLE loan_officers;
+
+
+CREATE USER bank_manager1 WITH PASSWORD 'WLNHj3RdEQ5F' LOGIN;
+GRANT bank_managers TO bank_manager1;
+
+CREATE USER loan_officer1 WITH PASSWORD 'yLBZNz39TZTK' LOGIN;
+GRANT loan_officers TO loan_officer1;
+
+CREATE USER teller1 WITH PASSWORD 'AN8jv2uZvyaJ' LOGIN;
+GRANT tellers TO teller1;
+
+CREATE USER customer1 WITH PASSWORD 'GkbfZ7Z7TD8j' LOGIN;
+GRANT customers TO customer1;
+
+
+GRANT USAGE ON SCHEMA public TO bank_managers;
+GRANT USAGE ON SCHEMA public TO loan_officers;
+GRANT USAGE ON SCHEMA public TO tellers;
+GRANT USAGE ON SCHEMA public TO customers;
+
+
 CREATE TABLE "account" (
   "account_id" serial,
   "customer_id" integer,

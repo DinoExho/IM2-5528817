@@ -26,6 +26,7 @@ CREATE TABLE "account" (
   "account_id" serial,
   "customer_id" integer,
   "account_type" varchar,
+  "balance" money,
   "open_date" date,
   "account_status" varchar
 );

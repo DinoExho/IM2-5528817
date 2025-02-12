@@ -95,6 +95,71 @@ CREATE TABLE "audit_trail" (
   "new_data" text
 );
 
+CREATE VIEW contact_employees WITH (security_barrier='false') AS
+ SELECT
+	e.forename,
+	e.surname,
+	e.email,
+  e.phone
+   FROM employees as e;
+
+CREATE VIEW financial_flow WITH (security_barrier='false') AS
+ SELECT
+  SUM(CASE WHEN t.transaction_type = 'IN' THEN amount ELSE 0 END) AS total_income,
+  SUM(CASE WHEN t.transaction_type = 'OUT' THEN amount ELSE 0 END) AS total_outgoing,
+  SUM(CASE WHEN t.transaction_type = 'incoming' THEN amount ELSE 0 END) - SUM(CASE WHEN transaction_type = 'outgoing' THEN amount ELSE 0 END) AS net_flow
+FROM
+    transaction_records t
+WHERE
+    t.transaction_date >= CURRENT_DATE - INTERVAL '7 days'
+
+CREATE VIEW loans_due WITH (security_barrier='false') AS
+ SELECT
+  c.forename,
+  c.surname,
+  loan_id,
+  l.account_id,
+  l.original_amount,
+  l.interest_rate,
+  l.loan_term,
+  l.start_date,
+  l.end_date,
+    FROM customers c, loan_information l
+    WHERE end_date <= CURRENT_DATE;
+	
+
+CREATE VIEW customer_transactions WITH (security_barrier='false') AS
+ SELECT
+	c.forename,
+  c.surname,
+  t.type,
+  t.date,
+  t.amount,
+  t.payment_method,
+  t.description
+    FROM customers c, transaction_records t
+    WHERE (c.customer_id = account.customer_id) AND (account.account_id = t.account_id);
+ 	  
+
+CREATE VIEW customer_incoming WITH (security_barrier='false') AS
+ SELECT
+	t.date,
+  t.amount,
+  t.payment_method,
+  t.description
+    FROM transaction_records as t
+    WHERE t.type = "incoming";
+
+CREATE VIEW customer_outgoing WITH (security_barrier='false') AS
+ SELECT
+	t.date,
+  t.amount,
+  t.payment_method,
+  t.description
+    FROM transaction_records as t
+    WHERE t.type = "outgoing";
+
+
 ALTER TABLE "account" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("customer_id");
 
 ALTER TABLE "transaction_records" ADD FOREIGN KEY ("account_id") REFERENCES "account" ("account_id");

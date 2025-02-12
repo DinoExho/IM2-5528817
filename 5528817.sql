@@ -117,7 +117,7 @@ CREATE VIEW loans_due WITH (security_barrier='false') AS
  SELECT
   c.forename,
   c.surname,
-  loan_id,
+  l.loan_id,
   l.account_id,
   l.original_amount,
   l.interest_rate,

@@ -97,11 +97,12 @@ CREATE TABLE "audit_trail" (
 
 CREATE VIEW contact_employees WITH (security_barrier='false') AS
  SELECT
-	e.forename,
-	e.surname,
-	e.email,
+  e.forename,
+  e.surname,
+  e.email,
   e.phone
-   FROM employees as e;
+   FROM employees e;
+
 
 CREATE VIEW financial_flow WITH (security_barrier='false') AS
  SELECT
@@ -130,7 +131,7 @@ CREATE VIEW loans_due WITH (security_barrier='false') AS
 
 CREATE VIEW customer_transactions WITH (security_barrier='false') AS
  SELECT
-	c.forename,
+  c.forename,
   c.surname,
   t.type,
   t.date,
@@ -143,20 +144,20 @@ CREATE VIEW customer_transactions WITH (security_barrier='false') AS
 
 CREATE VIEW customer_incoming WITH (security_barrier='false') AS
  SELECT
-	t.date,
+  t.date,
   t.amount,
   t.payment_method,
   t.description
-    FROM transaction_records as t
+    FROM transaction_records t
     WHERE t.type = "incoming";
 
 CREATE VIEW customer_outgoing WITH (security_barrier='false') AS
  SELECT
-	t.date,
+  t.date,
   t.amount,
   t.payment_method,
   t.description
-    FROM transaction_records as t
+    FROM transaction_records t
     WHERE t.type = "outgoing";
 
 

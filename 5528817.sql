@@ -3,7 +3,6 @@ CREATE ROLE bank_managers;
 CREATE ROLE tellers;
 CREATE ROLE loan_officers;
 
-
 CREATE USER bank_manager1 WITH PASSWORD 'WLNHj3RdEQ5F' LOGIN;
 GRANT bank_managers TO bank_manager1;
 

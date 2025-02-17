@@ -160,29 +160,64 @@ CREATE VIEW customer_outgoing WITH (security_barrier='false') AS
     FROM transaction_records t
     WHERE t.type = "outgoing";
 
--- INSERT FUNCTION TEMPLATE -----------------------------------------------------------
-CREATE FUNCTION insertfuncname(values types) RETURNS void
+CREATE FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible ) RETURNS void
 LANGUAGE plpgsql
-AS 
-$$
-BEGIN
-	INSERT INTO tablename (values)
-	VALUES (values);
-END 
+AS $$
+DECLARE
+	sql_query TEXT;
+BEGIN    
+	sql_query := format('UPDATE customers SET %I = $1 WHERE customer_id = $2', p_fieldname);
+	EXECUTE sql_query USING p_newvalue, p_identifier;
+END;
 $$;
+
+
+CREATE FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible ) RETURNS void
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	sql_query TEXT;
+BEGIN    
+	sql_query := format('UPDATE employees SET %I = $1 WHERE employee_id = $2', p_fieldname);
+	EXECUTE sql_query USING p_newvalue, p_identifier;
+END;
+$$;
+
+
+CREATE FUNCTION update_loans(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible ) RETURNS void
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	sql_query TEXT;
+BEGIN    
+	sql_query := format('UPDATE loan_information SET %I = $1 WHERE loan_id = $2', p_fieldname);
+	EXECUTE sql_query USING p_newvalue, p_identifier;
+END;
+$$;
+
+-- INSERT FUNCTION TEMPLATE -----------------------------------------------------------
+-- CREATE FUNCTION insertfuncname(values types) RETURNS void
+-- LANGUAGE plpgsql
+-- AS 
+-- $$
+-- BEGIN
+-- 	INSERT INTO tablename (values)
+-- 	VALUES (values);
+-- END 
+-- $$;
 ---------------------------------------------------------------------------------------
 
 
 -- UPDATE FUNCTION TEMPLATE -----------------------------------------------------------
-CREATE FUNCTION updatefuncname(values types) RETURNS void
-	LANGUAGE plpgsql
-	AS $$DECLARE
-	sql_query TEXT;
-BEGIN    
-sql_query := format('UPDATE tablename SET %I = $1 WHERE IDENTIFIER = $2', p_fieldname);
-EXECUTE sql_query USING p_newvalue, p_identifier;
-END;
-$$;
+-- CREATE FUNCTION updatefuncname(values types) RETURNS void
+-- 	LANGUAGE plpgsql
+-- 	AS $$DECLARE
+-- 	sql_query TEXT;
+-- BEGIN    
+-- sql_query := format('UPDATE tablename SET %I = $1 WHERE IDENTIFIER = $2', p_fieldname);
+-- EXECUTE sql_query USING p_newvalue, p_identifier;
+-- END;
+-- $$;
 --------------------------------------------------------------------------------------
 
 ALTER TABLE "account" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("customer_id");

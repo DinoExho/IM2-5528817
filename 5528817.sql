@@ -358,31 +358,6 @@ END;
 $$;
 
 
--- INSERT FUNCTION TEMPLATE -----------------------------------------------------------
--- CREATE FUNCTION insertfuncname(values types) RETURNS void
--- LANGUAGE plpgsql
--- AS 
--- $$
--- BEGIN
--- 	INSERT INTO tablename (values)
--- 	VALUES (values);
--- END 
--- $$;
----------------------------------------------------------------------------------------
-
-
--- UPDATE FUNCTION TEMPLATE -----------------------------------------------------------
--- CREATE FUNCTION updatefuncname(values types) RETURNS void
--- 	LANGUAGE plpgsql
--- 	AS $$DECLARE
--- 	sql_query TEXT;
--- BEGIN    
--- sql_query := format('UPDATE tablename SET %I = $1 WHERE IDENTIFIER = $2', p_fieldname);
--- EXECUTE sql_query USING p_newvalue, p_identifier;
--- END;
--- $$;
---------------------------------------------------------------------------------------
-
 ALTER TABLE "account" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("customer_id");
 
 ALTER TABLE "transaction_records" ADD FOREIGN KEY ("account_id") REFERENCES "account" ("account_id");

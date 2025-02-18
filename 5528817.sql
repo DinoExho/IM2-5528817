@@ -322,7 +322,7 @@ BEGIN
 END 
 $$;
 
-CREATE OR REPLACE FUNCTION transfer_funds(sender_account_id INT, receiver_account_id INT, amount NUMERIC, description text)
+CREATE FUNCTION transfer_funds(sender_account_id INT, receiver_account_id INT, amount NUMERIC, description text)
 RETURNS BOOLEAN 
 LANGUAGE plpgsql
 AS $$
@@ -357,6 +357,20 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION return_user_role()
+RETURNS text 
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	to_return text;
+BEGIN
+    SELECT r.role_name
+    INTO to_return
+    FROM users u
+    JOIN user_roles r ON u.role_id = r.role_id 
+    WHERE u.username = CURRENT_USER;
+    RETURN to_return;
+END
 
 ALTER TABLE "account" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("customer_id");
 

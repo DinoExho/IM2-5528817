@@ -103,6 +103,34 @@ CREATE VIEW contact_employees WITH (security_barrier='false') AS
   e.phone
    FROM employees e;
 
+CREATE VIEW customerinfo_loanofficers AS
+SELECT
+    customer_id,
+    forename,
+    surname
+FROM
+    customers;
+
+CREATE VIEW customerinfo_tellers AS
+SELECT
+    forename,
+    surname,
+    dob,
+FROM
+    customers;
+
+
+CREATE VIEW customerinfo_customers AS
+SELECT
+    forename,
+    surname,
+    dob,
+    phone,
+    email,
+    address,
+FROM
+    customers;
+
 
 CREATE VIEW financial_flow WITH (security_barrier='false') AS
  SELECT
@@ -128,6 +156,75 @@ CREATE VIEW loans_due WITH (security_barrier='false') AS
     FROM customers c, loan_information l
     WHERE end_date <= CURRENT_DATE;
 	
+CREATE OR REPLACE FUNCTION customer_active_loans(user_id integer)
+RETURNS TABLE (account_id integer, original_amount numeric, interest_rate decimal, loan_term varchar, end_date date)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        account_id, original_amount, interest_rate, loan_term, end_date
+    FROM
+        loan_information
+    WHERE
+        customer_id = user_id AND loan_start_date <= CURRENT_DATE AND loan_end_date >= CURRENT_DATE;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION customer_active_loans_loanofficer(user_id integer)
+RETURNS TABLE (loan_id integer, account_id integer, original_amount numeric, interest_rate decimal, loan_term varchar, start_date date, end_date date)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
+    FROM
+        loan_information
+    WHERE
+        customer_id = user_id AND loan_start_date <= CURRENT_DATE AND loan_end_date >= CURRENT_DATE;
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION customer_accounts(customer_id integer)
+LANGUAGE plpgsql
+RETURNS TABLE (account_id, customer_id, open_date)
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+       a.balance
+    FROM
+        accounts a  
+    JOIN
+        customers c ON a.customer_id = c.customer_id
+    WHERE
+        c.customer_id = customer_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION account_audit_trail(account_id_ INT)
+RETURNS TABLE (audit_id INT, account_id INT, audit_timestamp TIMESTAMP WITH TIME ZONE, action_details text, affected_record varchar, old_data text, new_data text)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        audit_id,
+	account_id, 
+	audit_timestamp, 
+	action_details, 
+	affected_record,
+	old_data, 
+	new_data
+    FROM
+        audit_trail a
+    WHERE
+        a.account_id = account_id;
+END;
+$$;
+
 
 CREATE VIEW customer_transactions WITH (security_barrier='false') AS
  SELECT
@@ -172,6 +269,16 @@ END;
 $$;
 
 
+CREATE FUNCTION insert_employee( p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_user_id integer) RETURNS void
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	INSERT INTO employees(forename, surname, email, phone, job_title, user_id)
+	VALUES (p_forename, p_surname, p_email, p_phone, p_job_title, p_user_id);
+END;
+$$;
+
+
 CREATE FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible ) RETURNS void
 LANGUAGE plpgsql
 AS $$
@@ -194,6 +301,62 @@ BEGIN
 	EXECUTE sql_query USING p_newvalue, p_identifier;
 END;
 $$;
+
+CREATE FUNCTION remove_employee(employee_id integer) RETURNS void
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM employees WHERE id = employee_id) THEN
+        DELETE FROM employees WHERE id = employee_id_to_remove;
+    END IF;
+END;
+$$;
+
+CREATE FUNCTION insert_loan(p_account_id integer, p_original_amount money, p_interest_rate decimal,  p_loan_term varchar, p_start_date date, p_end_date date) RETURNS void
+LANGUAGE plpgsql
+AS 
+$$
+BEGIN
+	INSERT INTO loan_information (account_id, original_amount, interest_rate,  loan_term, start_date, end_date)
+	VALUES (p_account_id, p_original_amount, p_interest_rate,  p_loan_term, p_start_date, p_end_date);
+END 
+$$;
+
+CREATE OR REPLACE FUNCTION transfer_funds(sender_account_id INT, receiver_account_id INT, amount NUMERIC, description text)
+RETURNS BOOLEAN 
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    sender_balance NUMERIC;
+    receiver_balance NUMERIC;
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM accounts WHERE account_id = sender_account_id OR account_id = receiver_account_id) THEN
+        RETURN FALSE;
+    END IF;
+
+    IF amount <= 0 THEN
+        RETURN FALSE;
+    END IF;
+
+    SELECT balance INTO sender_balance FROM accounts WHERE account_id = sender_account_id FOR UPDATE;
+
+    IF sender_balance < amount THEN
+        RETURN FALSE;
+    END IF;
+
+	UPDATE accounts SET balance = balance - amount WHERE account_id = sender_account_id;
+	UPDATE accounts SET balance = balance + amount WHERE account_id = receiver_account_id;
+
+	INSERT INTO transaction_records (account_id, transaction_type, transaction_timestamp, amount, payment_method, description)
+	VALUES (sender_account_id, 'outgoing', NOW(), amount, 'Bank Transfer', description); 
+	
+	INSERT INTO transaction_records (account_id, transaction_type, transaction_timestamp, amount, payment_method, description)
+	VALUES (receiver_account_id, 'incoming', NOW(), amount, 'Bank Transfer', description); 
+
+        RETURN TRUE;
+END;
+$$;
+
 
 -- INSERT FUNCTION TEMPLATE -----------------------------------------------------------
 -- CREATE FUNCTION insertfuncname(values types) RETURNS void

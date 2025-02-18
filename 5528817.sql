@@ -23,76 +23,76 @@ GRANT USAGE ON SCHEMA public TO customers;
 
 
 CREATE TABLE "account" (
-  "account_id" serial,
-  "customer_id" integer,
-  "account_type" varchar,
-  "balance" money,
-  "open_date" date,
-  "account_status" varchar
+  "account_id" serial NOT NULL,
+  "customer_id" integer NOT NULL,
+  "account_type" varchar NOT NULL,
+  "balance" money NOT NULL,
+  "open_date" date NOT NULL,
+  "account_status" varchar NOT NULL
 );
 
 CREATE TABLE "transaction_records" (
-  "transaction_id" serial,
-  "account_id" integer,
-  "transaction_type" varchar,
-  "transaction_timestamp" timestamp,
-  "amount" money,
-  "payment_method" varchar,
-  "description" text
+  "transaction_id" serial NOT NULL,
+  "account_id" integer NOT NULL,
+  "transaction_type" varchar NOT NULL,
+  "transaction_timestamp" timestamp NOT NULL,
+  "amount" money NOT NULL,
+  "payment_method" varchar NOT NULL,
+  "description" text NOT NULL
 );
 
 CREATE TABLE "employees" (
-  "employee_id" serial,
-  "forename" varchar,
-  "surname" varchar,
-  "email" varchar,
-  "phone" varchar,
-  "job_title" varchar,
-  "user_id" integer
+  "employee_id" serial NOT NULL,
+  "forename" varchar NOT NULL,
+  "surname" varchar NOT NULL,
+  "email" varchar NOT NULL,
+  "phone" varchar NOT NULL,
+  "job_title" varchar NOT NULL,
+  "user_id" integer NOT NULL
 );
 
 CREATE TABLE "loan_information" (
-  "loan_id" serial,
-  "account_id" integer,
-  "original_amount" money,
-  "interest_rate" decimal,
-  "loan_term" varchar,
-  "start_date" date,
-  "end_date" date
+  "loan_id" serial NOT NULL,
+  "account_id" integer NOT NULL,
+  "original_amount" money NOT NULL,
+  "interest_rate" decimal NOT NULL,
+  "loan_term" varchar NOT NULL,
+  "start_date" date NOT NULL,
+  "end_date" date NOT NULL
 );
 
 CREATE TABLE "user_roles" (
-  "role_id" serial,
-  "role_name" varchar
+  "role_id" serial NOT NULL,
+  "role_name" varchar NOT NULL
 );
 
 CREATE TABLE "users" (
-  "user_id" serial,
-  "username" varchar,
-  "password" varchar,
-  "role_id" integer,
-  "last_login" text
+  "user_id" serial NOT NULL,
+  "username" varchar NOT NULL,
+  "password" varchar NOT NULL,
+  "role_id" integer NOT NULL,
+  "last_login" text NOT NULL
 );
 
 CREATE TABLE "customers" (
-  "customer_id" serial,
-  "forename" varchar,
-  "surname" varchar,
-  "dob" date,
-  "email" varchar,
-  "phone" varchar,
-  "address" text,
-  "user_id" integer
+  "customer_id" serial NOT NULL,
+  "forename" varchar NOT NULL,
+  "surname" varchar NOT NULL,
+  "dob" date NOT NULL,
+  "email" varchar NOT NULL,
+  "phone" varchar NOT NULL,
+  "address" text NOT NULL,
+  "user_id" integer NOT NULL
 );
 
 CREATE TABLE "audit_trail" (
-  "audit_id" serial,
-  "account_id" integer,
-  "audit_timestamp" timestamp,
-  "action_details" text,
-  "affected_record" varchar,
-  "old_data" text,
-  "new_data" text
+  "audit_id" serial NOT NULL,
+  "account_id" integer NOT NULL,
+  "audit_timestamp" timestamp NOT NULL,
+  "action_details" text NOT NULL,
+  "affected_record" varchar NOT NULL,
+  "old_data" text NOT NULL,
+  "new_data" text NOT NULL
 );
 
 CREATE VIEW contact_employees WITH (security_barrier='false') AS

@@ -415,6 +415,25 @@ BEGIN
     WHERE u.username = CURRENT_USER;
     RETURN to_return;
 END
+$$;
+
+REVOKE ALL ON VIEW customerinfo_customers FROM PUBLIC;
+GRANT ALL ON VIEW customerinfo_customers to customers;
+
+REVOKE ALL ON VIEW financial_flow FROM PUBLIC;
+GRANT ALL ON VIEW financial_flow to bank_managers;
+
+REVOKE ALL ON VIEW loans_due FROM PUBLIC;
+GRANT ALL ON VIEW loans_due to loan_officers;
+
+REVOKE ALL ON VIEW customer_transactions FROM PUBLIC;
+GRANT ALL ON VIEW customer_transactions to tellers;
+
+REVOKE ALL ON VIEW customer_incoming FROM PUBLIC;
+GRANT ALL ON VIEW customer_incoming to customers;
+
+REVOKE ALL ON VIEW customer_outgoing FROM PUBLIC;
+GRANT ALL ON VIEW customer_outgoing to customers;
 
 ALTER TABLE "account" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("customer_id");
 

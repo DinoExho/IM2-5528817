@@ -31,6 +31,13 @@ CREATE TABLE "account" (
   "account_status" varchar NOT NULL
 );
 
+REVOKE ALL ON TABLE account FROM PUBLIC;
+GRANT ALL ON TABLE account to bank_managers;
+GRANT SELECT ON TABLE account to loan_officers;
+GRANT SELECT ON TABLE account to tellers;
+GRANT SELECT,UPDATE ON TABLE account to customers;
+
+
 CREATE TABLE "transaction_records" (
   "transaction_id" serial NOT NULL,
   "account_id" integer NOT NULL,
@@ -40,6 +47,12 @@ CREATE TABLE "transaction_records" (
   "payment_method" varchar NOT NULL,
   "description" text NOT NULL
 );
+
+REVOKE ALL ON TABLE transactions_records FROM PUBLIC;
+GRANT SELECT ON TABLE transactions_records to bank_managers;
+GRANT SELECT ON TABLE transactions_records to loan_officers;
+GRANT SELECT ON TABLE transactions_records to tellers;
+GRANT SELECT ON TABLE transactions_records to customers;
 
 CREATE TABLE "employees" (
   "employee_id" serial NOT NULL,
@@ -51,6 +64,11 @@ CREATE TABLE "employees" (
   "user_id" integer NOT NULL
 );
 
+REVOKE ALL ON TABLE employees FROM PUBLIC;
+GRANT ALL ON TABLE employees to bank_managers;
+GRANT SELECT,UPDATE ON TABLE employees to loan_officers;
+GRANT SELECT,UPDATE ON TABLE employees to tellers;
+
 CREATE TABLE "loan_information" (
   "loan_id" serial NOT NULL,
   "account_id" integer NOT NULL,
@@ -61,10 +79,20 @@ CREATE TABLE "loan_information" (
   "end_date" date NOT NULL
 );
 
+REVOKE ALL ON TABLE loan_information FROM PUBLIC;
+GRANT ALL ON TABLE loan_information to bank_managers;
+GRANT ALL ON TABLE loan_information to loan_officers;
+GRANT SELECT ON TABLE loan_information to tellers;
+GRANT SELECT ON TABLE loan_information to customers;
+
 CREATE TABLE "user_roles" (
   "role_id" serial NOT NULL,
   "role_name" varchar NOT NULL
 );
+
+REVOKE ALL ON TABLE user_roles FROM PUBLIC;
+GRANT ALL ON TABLE user_roles to bank_managers;
+
 
 CREATE TABLE "users" (
   "user_id" serial NOT NULL,
@@ -73,6 +101,13 @@ CREATE TABLE "users" (
   "role_id" integer NOT NULL,
   "last_login" text NOT NULL
 );
+
+REVOKE ALL ON TABLE users FROM PUBLIC;
+GRANT ALL ON TABLE users to bank_managers;
+GRANT SELECT,UPDATE ON TABLE users to loan_officers;
+GRANT SELECT,UPDATE ON TABLE users tellers;
+GRANT SELECT,UPDATE ON TABLE users to customers;
+
 
 CREATE TABLE "customers" (
   "customer_id" serial NOT NULL,
@@ -85,6 +120,12 @@ CREATE TABLE "customers" (
   "user_id" integer NOT NULL
 );
 
+REVOKE ALL ON TABLE customers FROM PUBLIC;
+GRANT ALL ON TABLE customers to bank_managers;
+GRANT SELECT,UPDATE ON TABLE customers to loan_officers;
+GRANT SELECT,UPDATE ON TABLE customers to tellers;
+GRANT SELECT,UPDATE ON TABLE customers to customers;
+
 CREATE TABLE "audit_trail" (
   "audit_id" serial NOT NULL,
   "account_id" integer NOT NULL,
@@ -94,6 +135,9 @@ CREATE TABLE "audit_trail" (
   "old_data" text NOT NULL,
   "new_data" text NOT NULL
 );
+
+REVOKE ALL ON TABLE audit_trail FROM PUBLIC;
+GRANT SELECT ON TABLE audit_trail to bank_managers;
 
 CREATE VIEW contact_employees WITH (security_barrier='false') AS
  SELECT

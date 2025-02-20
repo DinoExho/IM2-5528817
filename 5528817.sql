@@ -301,7 +301,7 @@ CREATE VIEW customer_outgoing WITH (security_barrier='false') AS
     FROM transaction_records t
     WHERE t.type = "outgoing";
 
-CREATE FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible ) RETURNS void
+CREATE FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -323,7 +323,7 @@ END;
 $$;
 
 
-CREATE FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible ) RETURNS void
+CREATE FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -335,7 +335,7 @@ END;
 $$;
 
 
-CREATE FUNCTION update_loans(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible ) RETURNS void
+CREATE FUNCTION update_loans(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -434,6 +434,43 @@ GRANT ALL ON VIEW customer_incoming to customers;
 
 REVOKE ALL ON VIEW customer_outgoing FROM PUBLIC;
 GRANT ALL ON VIEW customer_outgoing to customers;
+
+REVOKE ALL ON FUNCTION customer_active_loans(user_id integer) FROM PUBLIC;
+GRANT SELECT ON FUNCTION customer_active_loans(user_id integer) to customers;
+
+REVOKE ALL ON FUNCTION customer_active_loans_loanofficer(user_id integer) FROM PUBLIC;
+GRANT SELECT ON FUNCTION customer_active_loans_loanofficer(user_id integer) to loan_officers;
+
+REVOKE ALL ON FUNCTION customer_accounts(customer_id integer) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION customer_accounts(customer_id integer) to customers;
+
+REVOKE ALL ON FUNCTION account_audit_trail(account_id_ INT) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION account_audit_trail(account_id_ INT) to bank_managers;
+
+REVOKE ALL ON FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) to customers;
+
+REVOKE ALL ON FUNCTION insert_employee( p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_user_id integer FROM PUBLIC; 
+GRANT SELECT ON FUNCTION insert_employee( p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_user_id integer) to bank_managers;
+
+REVOKE ALL ON FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) to bank_managers;
+
+REVOKE ALL ON FUNCTION update_loans(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION update_loans(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) to loan_officers;
+
+REVOKE ALL ON FUNCTION remove_employee(employee_id integer) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION remove_employee(employee_id integer) to bank_managers;
+
+REVOKE ALL ON FUNCTION insert_loan(p_account_id integer, p_original_amount money, p_interest_rate decimal,  p_loan_term varchar, p_start_date date, p_end_date date) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION insert_loan(p_account_id integer, p_original_amount money, p_interest_rate decimal,  p_loan_term varchar, p_start_date date, p_end_date date) to loan_officers;
+
+REVOKE ALL ON FUNCTION transfer_funds(sender_account_id INT, receiver_account_id INT, amount NUMERIC, description text) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION transfer_funds(sender_account_id INT, receiver_account_id INT, amount NUMERIC, description text) to customers;
+
+REVOKE ALL ON FUNCTION return_user_role() FROM PUBLIC; 
+GRANT SELECT ON FUNCTION return_user_role() to PUBLIC;
+
 
 ALTER TABLE "account" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("customer_id");
 

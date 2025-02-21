@@ -16,6 +16,34 @@ CREATE USER customer1 WITH PASSWORD 'GkbfZ7Z7TD8j' LOGIN;
 GRANT customers TO customer1;
 
 
+
+
+CREATE OR REPLACE FUNCTION create_users()
+RETURNS VOID AS $$
+DECLARE
+  user_rec RECORD;
+BEGIN
+  FOR user_rec IN EXECUTE format('SELECT username, password_hash, role FROM %I', users) LOOP
+    EXECUTE format('CREATE ROLE %I WITH PASSWORD %L LOGIN', user_record.username, user_record.password);
+
+    IF user_record.role = '1' THEN
+      EXECUTE format('GRANT bank_managers TO %I;', user_record.username);
+
+    ELSIF user_record.role = '2' THEN
+       EXECUTE format('GRANT loan_officers TO %I;', user_record.username);
+
+    ELSIF user_record.role = '3' THEN
+      EXECUTE format('GRANT tellers TO %I;', user_record.username);
+
+    ELSIF user_record.role = '4' THEN
+       EXECUTE format('GRANT customers TO %I;', user_record.username);
+    ELSE
+      RAISE EXCEPTION 'Unknown role: %', user_record.role;
+    END IF;
+  END LOOP;
+END;
+$$;
+
 GRANT USAGE ON SCHEMA public TO bank_managers;
 GRANT USAGE ON SCHEMA public TO loan_officers;
 GRANT USAGE ON SCHEMA public TO tellers;

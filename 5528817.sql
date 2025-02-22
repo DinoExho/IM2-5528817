@@ -16,43 +16,15 @@ CREATE USER customer1 WITH PASSWORD 'GkbfZ7Z7TD8j' LOGIN;
 GRANT customers TO customer1;
 
 
-
-
-CREATE OR REPLACE FUNCTION create_users()
-RETURNS VOID AS $$
-DECLARE
-  user_rec RECORD;
-BEGIN
-  FOR user_rec IN EXECUTE format('SELECT username, password_hash, role FROM %I', users) LOOP
-    EXECUTE format('CREATE ROLE %I WITH PASSWORD %L LOGIN', user_record.username, user_record.password);
-
-    IF user_record.role = '1' THEN
-      EXECUTE format('GRANT bank_managers TO %I;', user_record.username);
-
-    ELSIF user_record.role = '2' THEN
-       EXECUTE format('GRANT loan_officers TO %I;', user_record.username);
-
-    ELSIF user_record.role = '3' THEN
-      EXECUTE format('GRANT tellers TO %I;', user_record.username);
-
-    ELSIF user_record.role = '4' THEN
-       EXECUTE format('GRANT customers TO %I;', user_record.username);
-    ELSE
-      RAISE EXCEPTION 'Unknown role: %', user_record.role;
-    END IF;
-  END LOOP;
-END;
-$$;
-
 GRANT USAGE ON SCHEMA public TO bank_managers;
 GRANT USAGE ON SCHEMA public TO loan_officers;
 GRANT USAGE ON SCHEMA public TO tellers;
-GRANT USAGE ON SCHEMA public TO customers;
+GRANT USAGE ON SCHEMA public TO s;
 
 
 CREATE TABLE "account" (
   "account_id" serial NOT NULL,
-  "customer_id" integer NOT NULL,
+  "_id" integer NOT NULL,
   "account_type" varchar NOT NULL,
   "balance" money NOT NULL,
   "open_date" date NOT NULL,
@@ -63,7 +35,7 @@ REVOKE ALL ON TABLE account FROM PUBLIC;
 GRANT ALL ON TABLE account to bank_managers;
 GRANT SELECT ON TABLE account to loan_officers;
 GRANT SELECT ON TABLE account to tellers;
-GRANT SELECT,UPDATE ON TABLE account to customers;
+GRANT SELECT,UPDATE ON TABLE account to s;
 
 
 CREATE TABLE "transaction_records" (
@@ -80,7 +52,7 @@ REVOKE ALL ON TABLE transactions_records FROM PUBLIC;
 GRANT SELECT ON TABLE transactions_records to bank_managers;
 GRANT SELECT ON TABLE transactions_records to loan_officers;
 GRANT SELECT ON TABLE transactions_records to tellers;
-GRANT SELECT ON TABLE transactions_records to customers;
+GRANT SELECT ON TABLE transactions_records to s;
 
 CREATE TABLE "employees" (
   "employee_id" serial NOT NULL,
@@ -111,7 +83,7 @@ REVOKE ALL ON TABLE loan_information FROM PUBLIC;
 GRANT ALL ON TABLE loan_information to bank_managers;
 GRANT ALL ON TABLE loan_information to loan_officers;
 GRANT SELECT ON TABLE loan_information to tellers;
-GRANT SELECT ON TABLE loan_information to customers;
+GRANT SELECT ON TABLE loan_information to s;
 
 CREATE TABLE "user_roles" (
   "role_id" serial NOT NULL,
@@ -329,7 +301,7 @@ CREATE VIEW customer_outgoing WITH (security_barrier='false') AS
     FROM transaction_records t
     WHERE t.type = "outgoing";
 
-CREATE FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
+CREATE OR REPLACE FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -341,17 +313,7 @@ END;
 $$;
 
 
-CREATE FUNCTION insert_employee( p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_user_id integer) RETURNS void
-LANGUAGE plpgsql
-AS $$
-BEGIN
-	INSERT INTO employees(forename, surname, email, phone, job_title, user_id)
-	VALUES (p_forename, p_surname, p_email, p_phone, p_job_title, p_user_id);
-END;
-$$;
-
-
-CREATE FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
+CREATE OR REPLACE FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -363,7 +325,7 @@ END;
 $$;
 
 
-CREATE FUNCTION update_loans(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
+CREATE OR REPLACE FUNCTION update_loans(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -374,7 +336,7 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION remove_employee(employee_id integer) RETURNS void
+CREATE OR REPLACE FUNCTION remove_employee(employee_id integer) RETURNS void
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -384,7 +346,7 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION insert_loan(p_account_id integer, p_original_amount money, p_interest_rate decimal,  p_loan_term varchar, p_start_date date, p_end_date date) RETURNS void
+CREATE OR REPLACE FUNCTION insert_loan(p_account_id integer, p_original_amount money, p_interest_rate decimal,  p_loan_term varchar, p_start_date date, p_end_date date) RETURNS void
 LANGUAGE plpgsql
 AS 
 $$
@@ -394,7 +356,7 @@ BEGIN
 END 
 $$;
 
-CREATE FUNCTION transfer_funds(sender_account_id INT, receiver_account_id INT, amount NUMERIC, description text)
+CREATE OR REPLACE FUNCTION transfer_funds(sender_account_id INT, receiver_account_id INT, amount NUMERIC, description text)
 RETURNS BOOLEAN 
 LANGUAGE plpgsql
 AS $$
@@ -429,21 +391,52 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION return_user_role()
-RETURNS text 
+CREATE OR REPLACE FUNCTION create_customer(
+    p_username varchar,
+    p_password varchar,
+    p_role_id integer,
+    p_forename varchar,
+    p_surname varchar,
+    p_dob date,
+    p_email varchar,
+    p_phone varchar,
+    p_address text
+)
+RETURNS VOID 
 LANGUAGE plpgsql
 AS $$
-DECLARE
-	to_return text;
 BEGIN
-    SELECT r.role_name
-    INTO to_return
-    FROM users u
-    JOIN user_roles r ON u.role_id = r.role_id 
-    WHERE u.username = CURRENT_USER;
-    RETURN to_return;
-END
+    IF NOT EXISTS (SELECT 1 FROM users WHERE username = p_username) THEN
+        INSERT INTO users (username, password, role_id, last_login)
+        VALUES (p_username, p_password, p_role_id, NOW());  
+
+        INSERT INTO customers (forename, surname, dob, email, phone, address, user_id)
+        VALUES (p_forename, p_surname, p_dob, p_email, p_phone, p_address, LASTVAL());
+
+
+	EXECUTE format('CREATE ROLE %I WITH PASSWORD %L LOGIN', username, password);
+	EXECUTE format('GRANT customers TO %I;', username);
+    END IF;
+END;
 $$;
+
+CREATE OR REPLACE FUNCTION insert_employee( p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_user_id integer) RETURNS void
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM users WHERE username = p_username) THEN
+	INSERT INTO users (username, password, role_id, last_login)
+        VALUES (p_username, p_password, p_role_id, NOW());  
+
+	INSERT INTO employees(forename, surname, email, phone, job_title, user_id)
+	VALUES (p_forename, p_surname, p_email, p_phone, p_job_title, p_user_id);
+
+	EXECUTE format('CREATE ROLE %I WITH PASSWORD %L LOGIN', username, password);
+	EXECUTE format('GRANT %I TO %L;', role_id, username);
+END IF;
+END;
+$$;
+
 
 REVOKE ALL ON VIEW customerinfo_customers FROM PUBLIC;
 GRANT ALL ON VIEW customerinfo_customers to customers;

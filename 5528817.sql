@@ -21,7 +21,7 @@ GRANT USAGE ON SCHEMA public TO loan_officers;
 GRANT USAGE ON SCHEMA public TO tellers;
 GRANT USAGE ON SCHEMA public TO s;
 
-
+-------------------- TABLES --------------------
 CREATE TABLE "account" (
   "account_id" serial NOT NULL,
   "_id" integer NOT NULL,
@@ -139,6 +139,9 @@ CREATE TABLE "audit_trail" (
 REVOKE ALL ON TABLE audit_trail FROM PUBLIC;
 GRANT SELECT ON TABLE audit_trail to bank_managers;
 
+-----------------------------------------------
+
+-------------------- VIEWS --------------------
 CREATE VIEW contact_employees WITH (security_barrier='false') AS
  SELECT
   e.forename,
@@ -199,7 +202,41 @@ CREATE VIEW loans_due WITH (security_barrier='false') AS
   l.end_date,
     FROM customers c, loan_information l
     WHERE end_date <= CURRENT_DATE;
-	
+
+CREATE VIEW customer_transactions WITH (security_barrier='false') AS
+ SELECT
+  c.forename,
+  c.surname,
+  t.type,
+  t.date,
+  t.amount,
+  t.payment_method,
+  t.description
+    FROM customers c, transaction_records t
+    WHERE (c.customer_id = account.customer_id) AND (account.account_id = t.account_id);
+ 	  
+
+CREATE VIEW customer_incoming WITH (security_barrier='false') AS
+ SELECT
+  t.date,
+  t.amount,
+  t.payment_method,
+  t.description
+    FROM transaction_records t
+    WHERE t.type = "incoming";
+
+CREATE VIEW customer_outgoing WITH (security_barrier='false') AS
+ SELECT
+  t.date,
+  t.amount,
+  t.payment_method,
+  t.description
+    FROM transaction_records t
+    WHERE t.type = "outgoing";
+---------------------------------------------------
+
+-------------------- FUNCTIONS --------------------
+
 CREATE OR REPLACE FUNCTION customer_active_loans(user_id integer)
 RETURNS TABLE (account_id integer, original_amount numeric, interest_rate decimal, loan_term varchar, end_date date)
 LANGUAGE plpgsql
@@ -214,6 +251,7 @@ BEGIN
         customer_id = user_id AND loan_start_date <= CURRENT_DATE AND loan_end_date >= CURRENT_DATE;
 END;
 $$;
+
 
 CREATE OR REPLACE FUNCTION customer_active_loans_loanofficer(user_id integer)
 RETURNS TABLE (loan_id integer, account_id integer, original_amount numeric, interest_rate decimal, loan_term varchar, start_date date, end_date date)
@@ -249,7 +287,7 @@ END;
 $$;
 
 CREATE OR REPLACE FUNCTION account_audit_trail(account_id_ INT)
-RETURNS TABLE (audit_id INT, account_id INT, audit_timestamp TIMESTAMP WITH TIME ZONE, action_details text, affected_record varchar, old_data text, new_data text)
+RETURNS TABLE (audit_id integer, account_id integer, audit_timestamp TIMESTAMP WITH TIME ZONE, action_details text, affected_record varchar, old_data text, new_data text)
 LANGUAGE plpgsql
 AS $$
 BEGIN
@@ -269,37 +307,6 @@ BEGIN
 END;
 $$;
 
-
-CREATE VIEW customer_transactions WITH (security_barrier='false') AS
- SELECT
-  c.forename,
-  c.surname,
-  t.type,
-  t.date,
-  t.amount,
-  t.payment_method,
-  t.description
-    FROM customers c, transaction_records t
-    WHERE (c.customer_id = account.customer_id) AND (account.account_id = t.account_id);
- 	  
-
-CREATE VIEW customer_incoming WITH (security_barrier='false') AS
- SELECT
-  t.date,
-  t.amount,
-  t.payment_method,
-  t.description
-    FROM transaction_records t
-    WHERE t.type = "incoming";
-
-CREATE VIEW customer_outgoing WITH (security_barrier='false') AS
- SELECT
-  t.date,
-  t.amount,
-  t.payment_method,
-  t.description
-    FROM transaction_records t
-    WHERE t.type = "outgoing";
 
 CREATE OR REPLACE FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
 LANGUAGE plpgsql
@@ -356,7 +363,7 @@ BEGIN
 END 
 $$;
 
-CREATE OR REPLACE FUNCTION transfer_funds(sender_account_id INT, receiver_account_id INT, amount NUMERIC, description text)
+CREATE OR REPLACE FUNCTION transfer_funds(sender_account_id integer, receiver_account_id integer, amount NUMERIC, description text)
 RETURNS BOOLEAN 
 LANGUAGE plpgsql
 AS $$
@@ -391,17 +398,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION create_customer(
-    p_username varchar,
-    p_password varchar,
-    p_role_id integer,
-    p_forename varchar,
-    p_surname varchar,
-    p_dob date,
-    p_email varchar,
-    p_phone varchar,
-    p_address text
-)
+CREATE OR REPLACE FUNCTION insert_customer(p_username varchar, p_password varchar, p_role_id integer, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text)
 RETURNS VOID 
 LANGUAGE plpgsql
 AS $$
@@ -486,11 +483,11 @@ GRANT SELECT ON FUNCTION remove_employee(employee_id integer) to bank_managers;
 REVOKE ALL ON FUNCTION insert_loan(p_account_id integer, p_original_amount money, p_interest_rate decimal,  p_loan_term varchar, p_start_date date, p_end_date date) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION insert_loan(p_account_id integer, p_original_amount money, p_interest_rate decimal,  p_loan_term varchar, p_start_date date, p_end_date date) to loan_officers;
 
-REVOKE ALL ON FUNCTION transfer_funds(sender_account_id INT, receiver_account_id INT, amount NUMERIC, description text) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION transfer_funds(sender_account_id INT, receiver_account_id INT, amount NUMERIC, description text) to customers;
+REVOKE ALL ON FUNCTION transfer_funds(sender_account_id integer, receiver_account_id integer, amount NUMERIC, description text) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION transfer_funds(sender_account_id integer, receiver_account_id integer, amount NUMERIC, description text) to customers;
 
-REVOKE ALL ON FUNCTION return_user_role() FROM PUBLIC; 
-GRANT SELECT ON FUNCTION return_user_role() to PUBLIC;
+REVOKE ALL ON FUNCTION insert_customer(p_username varchar, p_password varchar, p_role_id integer, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION insert_customer(p_username varchar, p_password varchar, p_role_id integer, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text) to bank_managers;
 
 
 ALTER TABLE "account" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("customer_id");

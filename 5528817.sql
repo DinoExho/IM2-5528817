@@ -398,14 +398,14 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION insert_customer(p_username varchar, p_password varchar, p_role_id integer, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text)
+CREATE OR REPLACE FUNCTION insert_customer(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text)
 RETURNS VOID 
 LANGUAGE plpgsql
 AS $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM users WHERE username = p_username) THEN
         INSERT INTO users (username, password, role_id, last_login)
-        VALUES (p_username, p_password, p_role_id, NOW());  
+        VALUES (p_username, p_password, 4, NOW());  
 
         INSERT INTO customers (forename, surname, dob, email, phone, address, user_id)
         VALUES (p_forename, p_surname, p_dob, p_email, p_phone, p_address, LASTVAL());
@@ -417,9 +417,11 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION insert_employee( p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_user_id integer) RETURNS void
+CREATE OR REPLACE FUNCTION insert_employee( p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) RETURNS void
 LANGUAGE plpgsql
 AS $$
+DECLARE
+	group_role varchar;
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM users WHERE username = p_username) THEN
 	INSERT INTO users (username, password, role_id, last_login)
@@ -428,13 +430,15 @@ BEGIN
 	INSERT INTO employees(forename, surname, email, phone, job_title, user_id)
 	VALUES (p_forename, p_surname, p_email, p_phone, p_job_title, p_user_id);
 
+	SELECT role_name INTO group_role FROM user_roles WHERE role_id = p_role_id)
 	EXECUTE format('CREATE ROLE %I WITH PASSWORD %L LOGIN', username, password);
-	EXECUTE format('GRANT %I TO %L;', role_id, username);
+	EXECUTE format('GRANT %I TO %L;', group_role, username);
 END IF;
 END;
 $$;
 
 
+-------------------- VIEWS SECURITY --------------------
 REVOKE ALL ON VIEW customerinfo_customers FROM PUBLIC;
 GRANT ALL ON VIEW customerinfo_customers to customers;
 
@@ -452,7 +456,10 @@ GRANT ALL ON VIEW customer_incoming to customers;
 
 REVOKE ALL ON VIEW customer_outgoing FROM PUBLIC;
 GRANT ALL ON VIEW customer_outgoing to customers;
+------------------------------------------------------------
 
+
+-------------------- FUNCTIONS SECURITY --------------------
 REVOKE ALL ON FUNCTION customer_active_loans(user_id integer) FROM PUBLIC;
 GRANT SELECT ON FUNCTION customer_active_loans(user_id integer) to customers;
 
@@ -468,8 +475,8 @@ GRANT SELECT ON FUNCTION account_audit_trail(account_id_ INT) to bank_managers;
 REVOKE ALL ON FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) to customers;
 
-REVOKE ALL ON FUNCTION insert_employee( p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_user_id integer FROM PUBLIC; 
-GRANT SELECT ON FUNCTION insert_employee( p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_user_id integer) to bank_managers;
+REVOKE ALL ON FUNCTION insert_employee(p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION insert_employee(p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) to bank_managers;
 
 REVOKE ALL ON FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) to bank_managers;
@@ -486,9 +493,13 @@ GRANT SELECT ON FUNCTION insert_loan(p_account_id integer, p_original_amount mon
 REVOKE ALL ON FUNCTION transfer_funds(sender_account_id integer, receiver_account_id integer, amount NUMERIC, description text) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION transfer_funds(sender_account_id integer, receiver_account_id integer, amount NUMERIC, description text) to customers;
 
-REVOKE ALL ON FUNCTION insert_customer(p_username varchar, p_password varchar, p_role_id integer, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION insert_customer(p_username varchar, p_password varchar, p_role_id integer, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text) to bank_managers;
+REVOKE ALL ON FUNCTION insert_customer(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION insert_customer(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text) to bank_managers;
 
+------------------------------------------------------------
+
+
+-------------------- TABLE FOREIGN KEYS --------------------
 
 ALTER TABLE "account" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("customer_id");
 

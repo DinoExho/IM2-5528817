@@ -141,6 +141,13 @@ GRANT SELECT ON TABLE audit_trail to bank_managers;
 
 -----------------------------------------------
 
+
+-------------------- POLICIES --------------------
+CREATE POLICY user_data_policy ON orders
+USING (user_id = current_user); 
+
+
+
 -------------------- VIEWS --------------------
 CREATE VIEW contact_employees WITH (security_barrier='false') AS
  SELECT

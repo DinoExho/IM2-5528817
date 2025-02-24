@@ -424,7 +424,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION insert_employee( p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) RETURNS void
+CREATE OR REPLACE FUNCTION insert_employee(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) RETURNS void
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -482,8 +482,8 @@ GRANT SELECT ON FUNCTION account_audit_trail(account_id_ INT) to bank_managers;
 REVOKE ALL ON FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) to customers;
 
-REVOKE ALL ON FUNCTION insert_employee(p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION insert_employee(p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) to bank_managers;
+REVOKE ALL ON FUNCTION insert_employee(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION insert_employee(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) to bank_managers;
 
 REVOKE ALL ON FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) to bank_managers;

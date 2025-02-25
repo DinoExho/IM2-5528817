@@ -58,132 +58,139 @@ echo ''
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT remove_employee(2);"
 echo ''
 echo '10 Check CRUD on customer'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Alice', 'Johnson', '1990-03-15', 'alice.johnson@example.com', '07890 123456', '10 Downing St', 1);"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE customers SET phone = '07700 987654' WHERE customer_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM customers WHERE customer_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM customers WHERE customer_id = 1;"
 echo '10.1 Create customer'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Alice', 'Johnson', '1990-03-15', 'alice.johnson@example.com', '07890 123456', '10 Downing St', 1);"
 echo ''
 echo '10.2 Update customer'
-echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE customers SET phone = '07700 987654' WHERE customer_id = 1;"
 echo ''
 echo '10.3 Retrieve customer'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM customers WHERE customer_id = 1;"
 echo ''
 echo '10.4 Delete customer'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM customers WHERE customer_id = 1;"
 echo ''
 echo '11 Check CRUD on account'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO account (account_type, balance, open_date, account_status) VALUES ('Savings', 1000.00, '2023-10-27', 'Active');"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE account SET balance = 1500.00, account_status = 'Active' WHERE account_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM account WHERE account_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM account WHERE account_id = 1;"
 echo '11.1 Create account'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO account (account_type, balance, open_date, account_status) VALUES ('Savings', 1000.00, '2023-10-27', 'Active');"
 echo ''
 echo '11.2 Update account'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE account SET balance = 1500.00, account_status = 'Active' WHERE account_id = 1;"
 echo ''
 echo '11.3 Retrieve account'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM account WHERE account_id = 1;"
 echo ''
 echo '11.4 Delete account'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM account WHERE account_id = 1;"
 echo ''
 echo '12 Check R only on audit_trail'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO audit_trail (account_id, audit_timestamp, action_details, affected_record, old_data, new_data) VALUES (1, NOW(), 'Account balance updated', 'account', '1000.00', '1500.00');"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE audit_trail SET action_details = 'Account balance updated',  old_data = '900.00', new_data = '1600.00' WHERE audit_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM audit_trail WHERE account_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM audit_trail WHERE audit_id = 2;"
 echo '12.1 Create audit_trail'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO audit_trail (account_id, audit_timestamp, action_details, affected_record, old_data, new_data) VALUES (1, NOW(), 'Account balance updated', 'account', '1000.00', '1500.00');"
 echo ''
 echo '12.2 Update audit_trail'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE audit_trail SET action_details = 'Account balance updated',  old_data = '900.00', new_data = '1600.00' WHERE audit_id = 1;"
 echo ''
 echo '12.3 Retrieve audit_trail'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM audit_trail WHERE account_id = 1;"
 echo ''
 echo '12.4 Delete audit_trail'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM audit_trail WHERE audit_id = 2;"
 echo ''
 echo '13 Check R only on transactions_record'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO transaction_records (account_id, transaction_type, transaction_timestamp, amount, payment_method, description) VALUES (1, 'Deposit', NOW(), 500.00, 'Cash', 'Cash deposit');"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE transaction_records SET amount = 750.00 WHERE transaction_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM transaction_records WHERE account_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM transaction_records WHERE transaction_id = 1;"
 echo '13.1 Create transactions_record'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO transaction_records (account_id, transaction_type, transaction_timestamp, amount, payment_method, description) VALUES (1, 'Deposit', NOW(), 500.00, 'Cash', 'Cash deposit');"
 echo ''
 echo '13.2 Update transactions_record'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE transaction_records SET amount = 750.00 WHERE transaction_id = 1;"
 echo ''
 echo '13.3 Retrieve transactions_record'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM transaction_records WHERE account_id = 1;"
 echo ''
 echo '13.4 Delete transactions_record'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM transaction_records WHERE transaction_id = 1;"
 echo ''
 echo '14 Check CRUD on employees'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO employees (forename, surname, email, phone, job_title, user_id) VALUES ('Emily', 'Brown', 'emily.brown@example.com', '07711 223344', 'Teller', 1);"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE employees SET job_title = 'Senior Teller' WHERE employee_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM employees WHERE employee_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM employees WHERE employee_id = 1;"
 echo '14.1 Create employee'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO employees (forename, surname, email, phone, job_title, user_id) VALUES ('Emily', 'Brown', 'emily.brown@example.com', '07711 223344', 'Teller', 1);"
 echo ''
 echo '14.2 Update employee'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE employees SET job_title = 'Senior Teller' WHERE employee_id = 1;"
 echo ''
 echo '14.3 Retrieve employee'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM employees WHERE employee_id = 1;"
 echo ''
 echo '14.4 Delete employee'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM employees WHERE employee_id = 1;"
 echo ''
 echo '15 Check CRUD on users'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO users (username, password, role_id, last_login) VALUES ('emilyb', 'S3curePword2!', 2, NOW());"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE users SET last_login = NOW() WHERE user_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM users WHERE user_id = 1;"
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM users WHERE user_id = 1;"
 echo '15.1 Create user'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO users (username, password, role_id, last_login) VALUES ('emilyb', 'S3curePword2!', 2, NOW());"
 echo ''
 echo '15.2 Update user'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE users SET last_login = NOW() WHERE user_id = 1;"
 echo ''
 echo '15.3 Retrieve user'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM users WHERE user_id = 1;"
 echo ''
 echo '15.4 Delete user'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM users WHERE user_id = 1;"
 echo ''
 echo '16 Check CRUD on user_roles'
 echo '16.1 Create user_role'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO user_roles (role_name) VALUES ('Fake Role');"
 echo ''
 echo '16.2 Update user_role'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE user_roles SET role_name ='new role' WHERE role_id = 5;"
 echo ''
 echo '16.3 Retrieve user_role'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM user_roles;"
 echo ''
 echo '16.4 Delete user_role'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM user_roles WHERE role_id = 5;"
 echo ''
 echo '17 Check CRUD on loan_information'
 echo '17.1 Create loan_information'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO loan_information (account_id, original_amount, interest_rate, loan_term, start_date, end_date) VALUES (1, 50000.00, 0.05, '5 years', '2023-10-27', '2028-10-27');"
 echo ''
 echo '17.2 Update loan_information'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "UPDATE loan_information SET interest_rate = 0.045 WHERE loan_id = 1;"
 echo ''
 echo '17.3 Retrieve loan_information'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM loan_information WHERE account_id = 1;"
 echo ''
 echo '17.4 Delete loan_information'
 echo ''
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM loan_information WHERE loan_id = 1;"
 echo ''
 echo '18 insert_loan'
 echo ''

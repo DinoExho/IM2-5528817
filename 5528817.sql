@@ -289,11 +289,7 @@ GRANT SELECT ON LoanOfficer_Users TO loan_officers;
 
 --------------------------------------------------------
 
-
-
 -------------------- FUNCTIONS --------------------
-
-
 
 CREATE OR REPLACE FUNCTION account_audit_trail(account_id_ INT)
 RETURNS TABLE (audit_id integer, account_id integer, audit_timestamp TIMESTAMP WITH TIME ZONE, action_details text, affected_record varchar, old_data text, new_data text)
@@ -317,51 +313,63 @@ END;
 $$;
 
 
-CREATE OR REPLACE FUNCTION transfer_funds(sender_account_id integer, receiver_account_id integer, amount NUMERIC, description text)
-RETURNS BOOLEAN 
+CREATE OR REPLACE FUNCTION withdraw(p_account_id INT, p_amount NUMERIC)
+RETURNS VOID 
 LANGUAGE plpgsql
 AS $$
-DECLARE
-    sender_balance NUMERIC;
-    receiver_balance NUMERIC;
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM accounts WHERE account_id = sender_account_id OR account_id = receiver_account_id) THEN
-        RETURN FALSE;
-    END IF;
+  IF NOT EXISTS (SELECT 1 FROM account WHERE account_id = p_account_id) THEN
+    RETURN FALSE;
+  END IF;
 
-    IF amount <= 0 THEN
-        RETURN FALSE;
-    END IF;
+  IF balance < p_amount THEN
+    RETURN FALSE;
+  END IF;
 
-    SELECT balance INTO sender_balance FROM accounts WHERE account_id = sender_account_id FOR UPDATE;
+  UPDATE account SET balance = balance - p_amount WHERE account_id = p_account_id;
 
-    IF sender_balance < amount THEN
-        RETURN FALSE;
-    END IF;
+  INSERT INTO transaction (account_id, transaction_type, amount, payment_method, description)
+  VALUES (p_account_id, 'Withdrawal', p_amount, 'Transfer', 'Withdrawal'); 
 
-	UPDATE accounts SET balance = balance - amount WHERE account_id = sender_account_id;
-	UPDATE accounts SET balance = balance + amount WHERE account_id = receiver_account_id;
+  INSERT INTO audit_trail (account_id, audit_timestamp, action_details, affected_record, old_data, new_data)
+  VALUES (p_account_id, NOW(), 'Withdrawal', 'account', balance + p_amount, balance);
 
-	INSERT INTO transaction_records (account_id, transaction_type, transaction_timestamp, amount, payment_method, description)
-	VALUES (sender_account_id, 'outgoing', NOW(), amount, 'Bank Transfer', description); 
-	
-	INSERT INTO transaction_records (account_id, transaction_type, transaction_timestamp, amount, payment_method, description)
-	VALUES (receiver_account_id, 'incoming', NOW(), amount, 'Bank Transfer', description); 
-
-        RETURN TRUE;
+  RETURN TRUE;
 END;
 $$;
 
+
+CREATE OR REPLACE FUNCTION deposit(p_account_id INT, p_amount NUMERIC)
+RETURNS BOOLEAN 
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM account WHERE account_id = p_account_id) THEN
+    RETURN FALSE;
+  END IF;
+
+  UPDATE account SET balance = balance + p_amount WHERE account_id = p_account_id;
+
+  INSERT INTO transaction (account_id, transaction_type, amount, payment_method, description)
+  VALUES (p_account_id, 'Deposit', p_amount, 'Transfer', 'Deposit');
+
+  INSERT INTO audit_trail (account_id, audit_timestamp, action_details, affected_record, old_data, new_data)
+  VALUES (p_account_id, NOW(), 'Deposit', 'account', balance - p_amount, balance);
+
+  RETURN TRUE;
+END;
+$$;
 
 -------------------- FUNCTIONS SECURITY --------------------
 
 REVOKE ALL ON FUNCTION account_audit_trail(account_id_ INT) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION account_audit_trail(account_id_ INT) to bank_managers;
 
+REVOKE ALL ON FUNCTION withdraw(p_account_id INT, p_amount NUMERIC) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION withdraw(p_account_id INT, p_amount NUMERIC) to customers;
 
-REVOKE ALL ON FUNCTION transfer_funds(sender_account_id integer, receiver_account_id integer, amount NUMERIC, description text) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION transfer_funds(sender_account_id integer, receiver_account_id integer, amount NUMERIC, description text) to customers;
-
+REVOKE ALL ON FUNCTION deposit(p_account_id INT, p_amount NUMERIC) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION deposit(p_account_id INT, p_amount NUMERIC) to customers;
 ------------------------------------------------------
 
 -------------------- AUDIT LOGGER --------------------
@@ -393,7 +401,7 @@ FOR EACH ROW
 EXECUTE PROCEDURE audit_logger();
 
 CREATE TRIGGER transaciton_records_trigger
-AFTER INSERT OR UPDATE OR DELETE ON transaciton_records 
+AFTER INSERT OR UPDATE OR DELETE ON transaction_records 
 FOR EACH ROW
 EXECUTE PROCEDURE audit_logger();
 

@@ -143,228 +143,161 @@ GRANT SELECT ON TABLE audit_trail to bank_managers;
 
 
 -------------------- POLICIES --------------------
-CREATE POLICY user_data_policy ON orders
-USING (user_id = current_user); 
+
+CREATE POLICY account_customer_policy ON account USING (EXISTS (SELECT 1 FROM users u JOIN customer c ON u.user_id = c.user_id WHERE u.username = current_user AND c.customer_id = account.customer_id));
+ALTER TABLE account ENABLE ROW LEVEL SECURITY;
 
 
+CREATE POLICY customer_customer_policy ON customer USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND u.user_id = customer.user_id));
+ALTER TABLE customer ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY transaction_customer_policy ON transaction USING (EXISTS (SELECT 1 FROM users u JOIN customer c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = transaction.account_id));
+ALTER TABLE transaction ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY loan_customer_policy ON loan USING (EXISTS (SELECT 1 FROM users u JOIN customer c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = loan.account_id));
+ALTER TABLE loan ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY employee_bank_manager_policy ON employee USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'bank_managers')));
+CREATE POLICY employee_loan_officer_policy ON employee USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'loan_officers')));
+CREATE POLICY employee_teller_policy ON employee USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'tellers')));
+ALTER TABLE employee ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY audit_trail_bank_manager_policy ON audit_trail USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'bank_managers')));
+ALTER TABLE audit_trail ENABLE ROW LEVEL SECURITY;
 
 -------------------- VIEWS --------------------
 
-CREATE VIEW BankManager_Account AS
+
+CREATE OR REPLACE VIEW BankManager_Account AS
+SELECT account_id, customer_id, account_type, balance, open_date, account_status
+FROM account;
+
+CREATE OR REPLACE VIEW LoanOfficer_Account AS
+SELECT account_id, customer_id, account_type, balance, open_date, account_status
+FROM account;
+
+CREATE OR REPLACE VIEW Customer_Account AS
 SELECT account_id, account_type, balance, open_date, account_status
 FROM account;
 
-CREATE VIEW Customer_Account AS
-SELECT account_id, account_type, balance, open_date, account_status
-FROM account;
 
-
-CREATE VIEW BankManager_Customer AS
-SELECT customer_id, forename, surname, dob, email, phone, address, user_id
+CREATE OR REPLACE VIEW BankManager_Customer AS
+SELECT customer_id, forename, surname, dob, email, phone, address
 FROM customer;
 
-CREATE VIEW LoanOfficer_Customer AS
-SELECT customer_id, forename, surname, dob, email, phone, address, user_id
+CREATE OR REPLACE VIEW LoanOfficer_Customer AS
+SELECT customer_id, forename, surname, dob, email, phone, address
 FROM customer;
 
-CREATE VIEW Customer_Customer AS
-SELECT customer_id, forename, surname, dob, email, phone, address, user_id
+CREATE OR REPLACE VIEW Customer_Customer AS
+SELECT customer_id, forename, surname, dob, email, phone, address
 FROM customer;
 
 
-CREATE VIEW BankManager_Transaction AS
+CREATE OR REPLACE VIEW BankManager_Transaction AS
 SELECT transaction_id, account_id, transaction_type, transaction_timestamp, amount, payment_method, description
 FROM transaction;
 
-CREATE VIEW Teller_Transaction AS
+CREATE OR REPLACE VIEW LoanOfficer_Transaction AS
+SELECT transaction_id, account_id, transaction_type, transaction_timestamp, amount, payment_method, description
+FROM transaction;
+
+CREATE OR REPLACE VIEW Teller_Transaction AS
 SELECT transaction_id, account_id, transaction_type, transaction_timestamp, amount, payment_method, description
 FROM transaction;
 
 
-CREATE VIEW BankManager_Loan AS
+CREATE OR REPLACE VIEW BankManager_Loan AS
 SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
 FROM loan;
 
-CREATE VIEW LoanOfficer_Loan AS
+CREATE OR REPLACE VIEW LoanOfficer_Loan AS
 SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
 FROM loan;
 
-CREATE VIEW Customer_Loan AS
+CREATE OR REPLACE VIEW Customer_Loan AS
 SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
 FROM loan;
 
 
-CREATE VIEW BankManager_Employee AS
+CREATE OR REPLACE VIEW BankManager_Employee AS
 SELECT employee_id, forename, surname, email, phone, job_title, user_id
 FROM employee;
 
-CREATE VIEW Teller_Employee AS
+CREATE OR REPLACE VIEW LoanOfficer_Employee AS
+SELECT employee_id, forename, surname, email, phone, job_title, user_id
+FROM employee;
+
+CREATE OR REPLACE VIEW Teller_Employee AS
 SELECT employee_id, forename, surname, email, phone, job_title, user_id
 FROM employee;
 
 
-CREATE VIEW BankManager_AuditTrail AS
+CREATE OR REPLACE VIEW BankManager_AuditTrail AS
 SELECT audit_id, account_id, audit_timestamp, action_details, affected_record, old_data, new_data
 FROM audit_trail;
 
-CREATE VIEW BankManager_UserRoles AS
+CREATE OR REPLACE VIEW LoanOfficer_AuditTrail AS
+SELECT audit_id, account_id, audit_timestamp, action_details, affected_record, old_data, new_data
+FROM audit_trail;
+
+
+CREATE OR REPLACE VIEW BankManager_UserRoles AS
 SELECT role_id, role_name
 FROM user_roles;
 
 
-CREATE VIEW BankManager_Users AS
-SELECT user_id, username, role_id, last_login  -- Exclude password for security
+CREATE OR REPLACE VIEW BankManager_Users AS
+SELECT user_id, username, role_id, last_login
 FROM users;
 
-CREATE VIEW LoanOfficer_Users AS
-SELECT user_id, username, role_id, last_login  -- Exclude password for security
+CREATE OR REPLACE VIEW LoanOfficer_Users AS
+SELECT user_id, username, role_id, last_login
 FROM users;
 
-
-
-CREATE VIEW contact_employees WITH (security_barrier='false') AS
- SELECT
-  e.forename,
-  e.surname,
-  e.email,
-  e.phone
-   FROM employees e;
-
-CREATE VIEW customerinfo_loanofficers AS
-SELECT
-    customer_id,
-    forename,
-    surname
-FROM
-    customers;
-
-CREATE VIEW customerinfo_tellers AS
-SELECT
-    forename,
-    surname,
-    dob,
-FROM
-    customers;
-
-
-CREATE VIEW customerinfo_customers AS
-SELECT
-    forename,
-    surname,
-    dob,
-    phone,
-    email,
-    address,
-FROM
-    customers;
-
-
-CREATE VIEW financial_flow WITH (security_barrier='false') AS
- SELECT
-  SUM(CASE WHEN t.transaction_type = 'IN' THEN amount ELSE 0 END) AS total_income,
-  SUM(CASE WHEN t.transaction_type = 'OUT' THEN amount ELSE 0 END) AS total_outgoing,
-  SUM(CASE WHEN t.transaction_type = 'incoming' THEN amount ELSE 0 END) - SUM(CASE WHEN transaction_type = 'outgoing' THEN amount ELSE 0 END) AS net_flow
-FROM
-    transaction_records t
-WHERE
-    t.transaction_date >= CURRENT_DATE - INTERVAL '7 days'
-
-CREATE VIEW loans_due WITH (security_barrier='false') AS
- SELECT
-  c.forename,
-  c.surname,
-  l.loan_id,
-  l.account_id,
-  l.original_amount,
-  l.interest_rate,
-  l.loan_term,
-  l.start_date,
-  l.end_date,
-    FROM customers c, loan_information l
-    WHERE end_date <= CURRENT_DATE;
-
-CREATE VIEW customer_transactions WITH (security_barrier='false') AS
- SELECT
-  c.forename,
-  c.surname,
-  t.type,
-  t.date,
-  t.amount,
-  t.payment_method,
-  t.description
-    FROM customers c, transaction_records t
-    WHERE (c.customer_id = account.customer_id) AND (account.account_id = t.account_id);
- 	  
-
-CREATE VIEW customer_incoming WITH (security_barrier='false') AS
- SELECT
-  t.date,
-  t.amount,
-  t.payment_method,
-  t.description
-    FROM transaction_records t
-    WHERE t.type = "incoming";
-
-CREATE VIEW customer_outgoing WITH (security_barrier='false') AS
- SELECT
-  t.date,
-  t.amount,
-  t.payment_method,
-  t.description
-    FROM transaction_records t
-    WHERE t.type = "outgoing";
 ---------------------------------------------------
+
+-------------------- VIEWS SECURITY --------------------
+
+
+GRANT SELECT ON BankManager_Account TO bank_managers;
+GRANT SELECT ON LoanOfficer_Account TO loan_officers;
+GRANT SELECT ON Customer_Account TO customers;
+
+GRANT SELECT ON BankManager_Customer TO bank_managers;
+GRANT SELECT ON LoanOfficer_Customer TO loan_officers;
+GRANT SELECT ON Customer_Customer TO customers;
+
+GRANT SELECT ON BankManager_Transaction TO bank_managers;
+GRANT SELECT ON LoanOfficer_Transaction TO loan_officers;
+GRANT SELECT ON Teller_Transaction TO tellers;
+
+GRANT SELECT ON BankManager_Loan TO bank_managers;
+GRANT SELECT ON LoanOfficer_Loan TO loan_officers;
+GRANT SELECT ON Customer_Loan TO customers;
+
+GRANT SELECT ON BankManager_Employee TO bank_managers;
+GRANT SELECT ON LoanOfficer_Employee TO loan_officers;
+GRANT SELECT ON Teller_Employee TO tellers;
+
+GRANT SELECT ON BankManager_AuditTrail TO bank_managers;
+GRANT SELECT ON LoanOfficer_AuditTrail TO loan_officers;
+
+GRANT SELECT ON BankManager_UserRoles TO bank_managers;
+
+GRANT SELECT ON BankManager_Users TO bank_managers;
+GRANT SELECT ON LoanOfficer_Users TO loan_officers;
+
+
+--------------------------------------------------------
+
+
 
 -------------------- FUNCTIONS --------------------
 
-CREATE OR REPLACE FUNCTION customer_active_loans(user_id integer)
-RETURNS TABLE (account_id integer, original_amount numeric, interest_rate decimal, loan_term varchar, end_date date)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    RETURN QUERY
-    SELECT
-        account_id, original_amount, interest_rate, loan_term, end_date
-    FROM
-        loan_information
-    WHERE
-        customer_id = user_id AND loan_start_date <= CURRENT_DATE AND loan_end_date >= CURRENT_DATE;
-END;
-$$;
 
-
-CREATE OR REPLACE FUNCTION customer_active_loans_loanofficer(user_id integer)
-RETURNS TABLE (loan_id integer, account_id integer, original_amount numeric, interest_rate decimal, loan_term varchar, start_date date, end_date date)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    RETURN QUERY
-    SELECT
-        loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
-    FROM
-        loan_information
-    WHERE
-        customer_id = user_id AND loan_start_date <= CURRENT_DATE AND loan_end_date >= CURRENT_DATE;
-END;
-$$;
-
-
-CREATE OR REPLACE FUNCTION customer_accounts(customer_id integer)
-LANGUAGE plpgsql
-RETURNS TABLE (account_id, customer_id, open_date)
-AS $$
-BEGIN
-    RETURN QUERY
-    SELECT
-       a.balance
-    FROM
-        accounts a  
-    JOIN
-        customers c ON a.customer_id = c.customer_id
-    WHERE
-        c.customer_id = customer_id;
-END;
-$$;
 
 CREATE OR REPLACE FUNCTION account_audit_trail(account_id_ INT)
 RETURNS TABLE (audit_id integer, account_id integer, audit_timestamp TIMESTAMP WITH TIME ZONE, action_details text, affected_record varchar, old_data text, new_data text)
@@ -387,61 +320,6 @@ BEGIN
 END;
 $$;
 
-
-CREATE OR REPLACE FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
-LANGUAGE plpgsql
-AS $$
-DECLARE
-	sql_query TEXT;
-BEGIN    
-	sql_query := format('UPDATE customers SET %I = $1 WHERE customer_id = $2', p_fieldname);
-	EXECUTE sql_query USING p_newvalue, p_identifier;
-END;
-$$;
-
-
-CREATE OR REPLACE FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
-LANGUAGE plpgsql
-AS $$
-DECLARE
-	sql_query TEXT;
-BEGIN    
-	sql_query := format('UPDATE employees SET %I = $1 WHERE employee_id = $2', p_fieldname);
-	EXECUTE sql_query USING p_newvalue, p_identifier;
-END;
-$$;
-
-
-CREATE OR REPLACE FUNCTION update_loans(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) RETURNS void
-LANGUAGE plpgsql
-AS $$
-DECLARE
-	sql_query TEXT;
-BEGIN    
-	sql_query := format('UPDATE loan_information SET %I = $1 WHERE loan_id = $2', p_fieldname);
-	EXECUTE sql_query USING p_newvalue, p_identifier;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION remove_employee(employee_id integer) RETURNS void
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM employees WHERE id = employee_id) THEN
-        DELETE FROM employees WHERE id = employee_id_to_remove;
-    END IF;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION insert_loan(p_account_id integer, p_original_amount money, p_interest_rate decimal,  p_loan_term varchar, p_start_date date, p_end_date date) RETURNS void
-LANGUAGE plpgsql
-AS 
-$$
-BEGIN
-	INSERT INTO loan_information (account_id, original_amount, interest_rate,  loan_term, start_date, end_date)
-	VALUES (p_account_id, p_original_amount, p_interest_rate,  p_loan_term, p_start_date, p_end_date);
-END 
-$$;
 
 CREATE OR REPLACE FUNCTION transfer_funds(sender_account_id integer, receiver_account_id integer, amount NUMERIC, description text)
 RETURNS BOOLEAN 
@@ -478,103 +356,15 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION insert_customer(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text)
-RETURNS VOID 
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM users WHERE username = p_username) THEN
-        INSERT INTO users (username, password, role_id, last_login)
-        VALUES (p_username, p_password, 4, NOW());  
-
-        INSERT INTO customers (forename, surname, dob, email, phone, address, user_id)
-        VALUES (p_forename, p_surname, p_dob, p_email, p_phone, p_address, LASTVAL());
-
-
-	EXECUTE format('CREATE ROLE %I WITH PASSWORD %L LOGIN', username, password);
-	EXECUTE format('GRANT customers TO %I;', username);
-    END IF;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION insert_employee(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) RETURNS void
-LANGUAGE plpgsql
-AS $$
-DECLARE
-	group_role varchar;
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM users WHERE username = p_username) THEN
-	INSERT INTO users (username, password, role_id, last_login)
-        VALUES (p_username, p_password, p_role_id, NOW());  
-
-	INSERT INTO employees(forename, surname, email, phone, job_title, user_id)
-	VALUES (p_forename, p_surname, p_email, p_phone, p_job_title, p_user_id);
-
-	SELECT role_name INTO group_role FROM user_roles WHERE role_id = p_role_id)
-	EXECUTE format('CREATE ROLE %I WITH PASSWORD %L LOGIN', username, password);
-	EXECUTE format('GRANT %I TO %L;', group_role, username);
-END IF;
-END;
-$$;
-
-
--------------------- VIEWS SECURITY --------------------
-REVOKE ALL ON VIEW customerinfo_customers FROM PUBLIC;
-GRANT ALL ON VIEW customerinfo_customers to customers;
-
-REVOKE ALL ON VIEW financial_flow FROM PUBLIC;
-GRANT ALL ON VIEW financial_flow to bank_managers;
-
-REVOKE ALL ON VIEW loans_due FROM PUBLIC;
-GRANT ALL ON VIEW loans_due to loan_officers;
-
-REVOKE ALL ON VIEW customer_transactions FROM PUBLIC;
-GRANT ALL ON VIEW customer_transactions to tellers;
-
-REVOKE ALL ON VIEW customer_incoming FROM PUBLIC;
-GRANT ALL ON VIEW customer_incoming to customers;
-
-REVOKE ALL ON VIEW customer_outgoing FROM PUBLIC;
-GRANT ALL ON VIEW customer_outgoing to customers;
-------------------------------------------------------------
-
 
 -------------------- FUNCTIONS SECURITY --------------------
-REVOKE ALL ON FUNCTION customer_active_loans(user_id integer) FROM PUBLIC;
-GRANT SELECT ON FUNCTION customer_active_loans(user_id integer) to customers;
-
-REVOKE ALL ON FUNCTION customer_active_loans_loanofficer(user_id integer) FROM PUBLIC;
-GRANT SELECT ON FUNCTION customer_active_loans_loanofficer(user_id integer) to loan_officers;
-
-REVOKE ALL ON FUNCTION customer_accounts(customer_id integer) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION customer_accounts(customer_id integer) to customers;
 
 REVOKE ALL ON FUNCTION account_audit_trail(account_id_ INT) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION account_audit_trail(account_id_ INT) to bank_managers;
 
-REVOKE ALL ON FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION update_customer(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) to customers;
-
-REVOKE ALL ON FUNCTION insert_employee(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION insert_employee(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_email varchar, p_phone varchar, p_job_title varchar, p_role_id integer) to bank_managers;
-
-REVOKE ALL ON FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION update_employee(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) to bank_managers;
-
-REVOKE ALL ON FUNCTION update_loans(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION update_loans(p_identifier integer, p_fieldname character varying, p_newvalue anycompatible) to loan_officers;
-
-REVOKE ALL ON FUNCTION remove_employee(employee_id integer) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION remove_employee(employee_id integer) to bank_managers;
-
-REVOKE ALL ON FUNCTION insert_loan(p_account_id integer, p_original_amount money, p_interest_rate decimal,  p_loan_term varchar, p_start_date date, p_end_date date) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION insert_loan(p_account_id integer, p_original_amount money, p_interest_rate decimal,  p_loan_term varchar, p_start_date date, p_end_date date) to loan_officers;
 
 REVOKE ALL ON FUNCTION transfer_funds(sender_account_id integer, receiver_account_id integer, amount NUMERIC, description text) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION transfer_funds(sender_account_id integer, receiver_account_id integer, amount NUMERIC, description text) to customers;
-
-REVOKE ALL ON FUNCTION insert_customer(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION insert_customer(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text) to bank_managers;
 
 ------------------------------------------------------
 

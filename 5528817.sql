@@ -503,6 +503,41 @@ GRANT SELECT ON FUNCTION transfer_funds(sender_account_id integer, receiver_acco
 REVOKE ALL ON FUNCTION insert_customer(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION insert_customer(p_username varchar, p_password varchar, p_forename varchar, p_surname varchar, p_dob date, p_email varchar, p_phone varchar, p_address text) to bank_managers;
 
+------------------------------------------------------
+
+-------------------- AUDIT LOGGER --------------------
+
+CREATE OR REPLACE FUNCTION audit_logger()
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  INSERT INTO audit_trail (account_id, audit_timestamp, action_details, affected_record, old_data, new_data)
+  VALUES (TG_TABLE_NAME.account_id, now(),
+    CASE TG_OP
+      WHEN 'INSERT' THEN 'INSERTED'
+      WHEN 'UPDATE' THEN 'UPDATED'
+      WHEN 'DELETE' THEN 'DELETED'
+    END, TG_TABLE_NAME || '.' || TG_TABLE_NAME.audit_id::text);
+   RETURN NULL; 
+END;
+$$;
+
+CREATE TRIGGER account_trigger
+AFTER INSERT OR UPDATE OR DELETE ON account 
+FOR EACH ROW
+EXECUTE PROCEDURE audit_logger();
+
+CREATE TRIGGER loan_information_trigger
+AFTER INSERT OR UPDATE OR DELETE ON loan_information 
+FOR EACH ROW
+EXECUTE PROCEDURE audit_logger();
+
+CREATE TRIGGER transaciton_records_trigger
+AFTER INSERT OR UPDATE OR DELETE ON transaciton_records 
+FOR EACH ROW
+EXECUTE PROCEDURE audit_logger();
+
 ------------------------------------------------------------
 
 

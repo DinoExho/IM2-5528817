@@ -149,6 +149,79 @@ USING (user_id = current_user);
 
 
 -------------------- VIEWS --------------------
+
+CREATE VIEW BankManager_Account AS
+SELECT account_id, account_type, balance, open_date, account_status
+FROM account;
+
+CREATE VIEW Customer_Account AS
+SELECT account_id, account_type, balance, open_date, account_status
+FROM account;
+
+
+CREATE VIEW BankManager_Customer AS
+SELECT customer_id, forename, surname, dob, email, phone, address, user_id
+FROM customer;
+
+CREATE VIEW LoanOfficer_Customer AS
+SELECT customer_id, forename, surname, dob, email, phone, address, user_id
+FROM customer;
+
+CREATE VIEW Customer_Customer AS
+SELECT customer_id, forename, surname, dob, email, phone, address, user_id
+FROM customer;
+
+
+CREATE VIEW BankManager_Transaction AS
+SELECT transaction_id, account_id, transaction_type, transaction_timestamp, amount, payment_method, description
+FROM transaction;
+
+CREATE VIEW Teller_Transaction AS
+SELECT transaction_id, account_id, transaction_type, transaction_timestamp, amount, payment_method, description
+FROM transaction;
+
+
+CREATE VIEW BankManager_Loan AS
+SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
+FROM loan;
+
+CREATE VIEW LoanOfficer_Loan AS
+SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
+FROM loan;
+
+CREATE VIEW Customer_Loan AS
+SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
+FROM loan;
+
+
+CREATE VIEW BankManager_Employee AS
+SELECT employee_id, forename, surname, email, phone, job_title, user_id
+FROM employee;
+
+CREATE VIEW Teller_Employee AS
+SELECT employee_id, forename, surname, email, phone, job_title, user_id
+FROM employee;
+
+
+CREATE VIEW BankManager_AuditTrail AS
+SELECT audit_id, account_id, audit_timestamp, action_details, affected_record, old_data, new_data
+FROM audit_trail;
+
+CREATE VIEW BankManager_UserRoles AS
+SELECT role_id, role_name
+FROM user_roles;
+
+
+CREATE VIEW BankManager_Users AS
+SELECT user_id, username, role_id, last_login  -- Exclude password for security
+FROM users;
+
+CREATE VIEW LoanOfficer_Users AS
+SELECT user_id, username, role_id, last_login  -- Exclude password for security
+FROM users;
+
+
+
 CREATE VIEW contact_employees WITH (security_barrier='false') AS
  SELECT
   e.forename,

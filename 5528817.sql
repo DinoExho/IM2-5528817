@@ -235,10 +235,6 @@ CREATE OR REPLACE VIEW BankManager_AuditTrail AS
 SELECT audit_id, account_id, audit_timestamp, action_details, affected_record, old_data, new_data
 FROM audit_trail;
 
-CREATE OR REPLACE VIEW LoanOfficer_AuditTrail AS
-SELECT audit_id, account_id, audit_timestamp, action_details, affected_record, old_data, new_data
-FROM audit_trail;
-
 
 CREATE OR REPLACE VIEW BankManager_UserRoles AS
 SELECT role_id, role_name

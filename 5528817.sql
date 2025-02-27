@@ -360,9 +360,12 @@ CREATE OR REPLACE FUNCTION user_trigger()
 RETURNS TRIGGER 
 LANGUAGE plpgsql
 AS $$
+DECLARE
+	sql_query TEXT;
 BEGIN
     IF NEW.username IS NOT NULL AND NEW.password IS NOT NULL AND NEW.role_id IS NOT NULL THEN
-        EXECUTE format('CREATE USER %I WITH PASSWORD %L', NEW.username, NEW.password);
+        sql_query := format('CREATE USER %I WITH PASSWORD %L');
+	EXECUTE sql_query USING NEW.username, NEW.password;
        
         IF NEW.role_id = 1 THEN 
             EXECUTE format('GRANT bank_managers TO %I;', NEW.username);

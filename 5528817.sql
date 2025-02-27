@@ -356,6 +356,36 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION user_trigger()
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NEW.username IS NOT NULL AND NEW.password IS NOT NULL AND NEW.role_id IS NOT NULL THEN
+        EXECUTE format('CREATE USER %I WITH PASSWORD %L', NEW.username, NEW.password);
+       
+        IF NEW.role_id = 1 THEN 
+            EXECUTE format('GRANT bank_managers TO %I;', NEW.username);
+        ELSIF NEW.role_id = 2 THEN 
+            EXECUTE format('GRANT loan_officers TO %I;', NEW.username);
+        ELSIF NEW.role_id = 3 THEN 
+            EXECUTE format('GRANT tellers TO %I;', NEW.username);
+        ELSIF NEW.role_id = 4 THEN 
+            EXECUTE format('GRANT customers TO %I;', NEW.username);
+        END IF;
+        RETURN NEW;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER database_user_creation_trigger
+AFTER INSERT ON users
+FOR EACH ROW
+EXECUTE FUNCTION user_trigger();
+$$;
+
+
 -------------------- FUNCTIONS SECURITY --------------------
 
 REVOKE ALL ON FUNCTION account_audit_trail(account_id_ INT) FROM PUBLIC; 

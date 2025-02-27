@@ -37,7 +37,7 @@ echo '5 - create loan officer - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO employees (forename, surname, email, phone, job_title, user_id) VALUES ('John', 'Doe', 'John.doe@example.com', '07700 123456', 'loan officer', 2);"
 echo ''
 echo '6 - create teller - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO users (username, password, role_id, last_login) VALUES ('cjohnson', 'mypassword', 3, '2025-01-02 18:43:00');"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO users (username, password, role_id, last_login) VALUES ('cjohnson', 'AN8jv2uZvyaJ', 3, '2025-01-02 18:43:00');"
 echo ''
 echo '7 - create teller - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO employees (forename, surname, email, phone, job_title, user_id) VALUES ('Carol', 'Johnson', 'carol.johnson@example.com', '07500 456789', 'teller', 3);"
@@ -106,33 +106,33 @@ echo ''
 echo '27 - check loan_information table view - expected outcome: success'
 PGPASSWORD=yLBZNz39TZTK psql -U jdoe -d 5528817 -c "SELECT "LoanOfficer_Loan"(1);"
 echo ''
-echo '28 - check cannot access customers - expected outcome: fail'
-PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT * FROM customer;"
-echo ''
 echo ''
 echo '----------------- Test Data as teller -----------------'
 echo ''
 echo ''
+echo '28 - check cannot access customers - expected outcome: fail'
+PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM customer;"
+echo ''
 echo '29 - check account table view - expected outcome: success'
-PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT "Teller_Account"(1);"
+PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT "Teller_Account"(1);"
 echo ''
 echo '30 - check cannot access audit_trail - expected outcome: fail'
-PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT * FROM audit_trail;"
+PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM audit_trail;"
 echo ''
 echo '31 - check transactions_record table view - expected outcome: success'
-PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT "Teller_Transaction"(1);"
+PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT "Teller_Transaction"(1);"
 echo ''
 echo '32 - check employees table view - expected outcome: success'
-PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT "Teller_Employee"(1);"
+PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT "Teller_Employee"(1);"
 echo ''
 echo '33 - check cannot access users - expected outcome: fail'
-PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT * FROM users;"
+PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM users;"
 echo ''
 echo '34 - check cannot access user_roles - expected outcome: fail'
-PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT * FROM user_roles;"
+PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM user_roles;"
 echo ''
 echo '35 - check cannot access loan_information - expected outcome: fail'
-PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT * FROM loan_information;"
+PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM loan_information;"
 echo ''
 echo ''
 echo '----------------- Test Data as customers -----------------'

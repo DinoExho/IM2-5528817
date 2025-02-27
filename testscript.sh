@@ -12,8 +12,10 @@ echo '----------------- Users, Views and Functions -----------------'
 psql -d 5528817 -c "\du"
 psql -d 5528817 -c "\dv"
 psql -d 5528817 -c "\dt"
-echo ‘’
+echo ''
+echo ''
 echo '----------------- Test Data as postgres -----------------'
+echo ''
 echo ''
 echo '1 - create user roles - expected outcome: success'
 PGPASSWORD=postgres psql -U postgres -d 5528817 -c "INSERT INTO user_roles(role_name) VALUES ('bank_manager'),('loan_officer'),('teller'),('customer');"
@@ -134,6 +136,7 @@ PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT * FROM loan_informa
 echo ''
 echo ''
 echo '----------------- Test Data as customers -----------------'
+echo ''
 echo ''
 echo '36 - withdraw function - expected outcome: success'
 PGPASSWORD=complexpw psql -U pbrown -d 5528817 -c "SELECT "withdraw"(1);"

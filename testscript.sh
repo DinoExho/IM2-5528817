@@ -86,7 +86,7 @@ echo ''
 echo '21 - check account table view - expected outcome: success'
 PGPASSWORD=password123 psql -U jdoe -d 5528817 -c "SELECT "LoanOfficer_Account"(1);"
 echo ''
-echo '22 - check can\'t access audit_Trail - expected outcome: fail'
+echo '22 - check cannot access audit_Trail - expected outcome: fail'
 PGPASSWORD=password123 psql -U jdoe -d 5528817 -c "SELECT * FROM audit_trail;"
 echo ''
 echo '23 - check transactions_record table view - expected outcome: success'
@@ -95,16 +95,16 @@ echo ''
 echo '24 - check employees table view - expected outcome: success'
 PGPASSWORD=password123 psql -U jdoe -d 5528817 -c "SELECT "LoanOfficer_Employee"(1);"
 echo ''
-echo '25 - check can\'t access users - expected outcome: fail'
+echo '25 - check cannot access users - expected outcome: fail'
 PGPASSWORD=password123 psql -U jdoe -d 5528817 -c "SELECT * FROM users;"
 echo ''
-echo '26 - check can\'t access user_roles - expected outcome: fail'
+echo '26 - check cannot access user_roles - expected outcome: fail'
 PGPASSWORD=password123 psql -U jdoe -d 5528817 -c "SELECT * FROM user_roles;"
 echo ''
 echo '27 - check loan_information table view - expected outcome: success'
 PGPASSWORD=password123 psql -U jdoe -d 5528817 -c "SELECT "LoanOfficer_Loan"(1);"
 echo ''
-echo '28 - check can\'t access customers - expected outcome: fail'
+echo '28 - check cannot access customers - expected outcome: fail'
 PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT * FROM customer;"
 echo ''
 echo ''
@@ -114,7 +114,7 @@ echo ''
 echo '29 - check account table view - expected outcome: success'
 PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT "Teller_Account"(1);"
 echo ''
-echo '30 - check can\'t access audit_trail - expected outcome: fail'
+echo '30 - check cannot access audit_trail - expected outcome: fail'
 PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT * FROM audit_trail;"
 echo ''
 echo '31 - check transactions_record table view - expected outcome: success'
@@ -123,13 +123,13 @@ echo ''
 echo '32 - check employees table view - expected outcome: success'
 PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT "Teller_Employee"(1);"
 echo ''
-echo '33 - check can\'t access users - expected outcome: fail'
+echo '33 - check cannot access users - expected outcome: fail'
 PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT * FROM users;"
 echo ''
-echo '34 - check can\'t access user_roles - expected outcome: fail'
+echo '34 - check cannot access user_roles - expected outcome: fail'
 PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT * FROM user_roles;"
 echo ''
-echo '35 - check can\'t access loan_information - expected outcome: fail'
+echo '35 - check cannot access loan_information - expected outcome: fail'
 PGPASSWORD=mypassword psql -U cjohnson -d 5528817 -c "SELECT * FROM loan_information;"
 echo ''
 echo ''
@@ -147,7 +147,7 @@ echo ''
 echo '39 - check account table view - expected outcome: success'
 PGPASSWORD=complexpw psql -U pbrown -d 5528817 -c "SELECT "Customer_Account"(1);"
 echo ''
-echo '40 - check can\'t access audit_trail - expected outcome: fail'
+echo '40 - check cannot access audit_trail - expected outcome: fail'
 PGPASSWORD=complexpw psql -U pbrown -d 5528817 -c "SELECT * FROM audit_trail;"
 echo ''
 echo '41 - check transactions_record table view - expected outcome: success'
@@ -156,10 +156,10 @@ echo ''
 echo '42 - check employees table view - expected outcome: fail'
 PGPASSWORD=complexpw psql -U pbrown -d 5528817 -c "SELECT * FROM employees;"
 echo ''
-echo '43 - check can\'t access users - expected outcome: fail'
+echo '43 - check cannot access users - expected outcome: fail'
 PGPASSWORD=complexpw psql -U pbrown -d 5528817 -c "SELECT * FROM users;"
 echo ''
-echo '44 - check can\'t access user_roles - expected outcome: fail'
+echo '44 - check cannot access user_roles - expected outcome: fail'
 PGPASSWORD=complexpw psql -U pbrown -d 5528817 -c "SELECT * FROM user_roles;"
 echo ''
 echo '45 - check loan_information table view - expected outcome: success'

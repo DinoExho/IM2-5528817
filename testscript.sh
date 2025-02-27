@@ -58,7 +58,7 @@ echo ''
 echo '13 - check audit_trail table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "BankManager_Transaction"(1);"
 echo ''
-echo '14 - check can\'t insert/update/delete audit trail - expected outcome: fail'
+echo '14 - check cannot insert/update/delete audit trail - expected outcome: fail'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM audit_trail;"
 echo ''
 echo '15 - check transactions_record table view - expected outcome: success'

@@ -286,7 +286,7 @@ GRANT SELECT ON LoanOfficer_Users TO loan_officers;
 
 -------------------- FUNCTIONS --------------------
 
-CREATE OR REPLACE FUNCTION account_audit_trail(account_id_ INT)
+CREATE OR REPLACE FUNCTION account_audit_trail(p_account_id INT)
 RETURNS TABLE (audit_id integer, account_id integer, audit_timestamp TIMESTAMP WITH TIME ZONE, action_details text, affected_record varchar, old_data text, new_data text)
 LANGUAGE plpgsql
 AS $$
@@ -303,7 +303,7 @@ BEGIN
     FROM
         audit_trail a
     WHERE
-        a.account_id = account_id;
+        a.account_id = p_account_id;
 END;
 $$;
 
@@ -389,8 +389,8 @@ EXECUTE FUNCTION user_trigger();
 
 -------------------- FUNCTIONS SECURITY --------------------
 
-REVOKE ALL ON FUNCTION account_audit_trail(account_id_ INT) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION account_audit_trail(account_id_ INT) to bank_managers;
+REVOKE ALL ON FUNCTION account_audit_trail(account_id INT) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION account_audit_trail(account_id INT) to bank_managers;
 
 REVOKE ALL ON FUNCTION withdraw(p_account_id INT, p_amount NUMERIC) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION withdraw(p_account_id INT, p_amount NUMERIC) to customers;
@@ -436,17 +436,17 @@ EXECUTE PROCEDURE audit_logger();
 
 -------------------- TABLE FOREIGN KEYS --------------------
 
-ALTER TABLE "account" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("customer_id");
+ALTER TABLE "account" ADD FOREIGN KEY ("account_customer_id") REFERENCES "customers" ("customer_id");
 
-ALTER TABLE "transaction_records" ADD FOREIGN KEY ("account_id") REFERENCES "account" ("account_id");
+ALTER TABLE "transaction_records" ADD FOREIGN KEY ("transaction_account_id") REFERENCES "account" ("account_id");
 
-ALTER TABLE "loan_information" ADD FOREIGN KEY ("account_id") REFERENCES "account" ("account_id");
+ALTER TABLE "loan_information" ADD FOREIGN KEY ("loan_account_id") REFERENCES "account" ("account_id");
 
-ALTER TABLE "audit_trail" ADD FOREIGN KEY ("account_id") REFERENCES "account" ("account_id");
+ALTER TABLE "audit_trail" ADD FOREIGN KEY ("audit_account_id") REFERENCES "account" ("account_id");
 
-ALTER TABLE "employees" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
+ALTER TABLE "employees" ADD FOREIGN KEY ("employees_user_id") REFERENCES "users" ("user_id");
 
-ALTER TABLE "customers" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
+ALTER TABLE "customers" ADD FOREIGN KEY ("customers_user_id") REFERENCES "users" ("user_id");
 
-ALTER TABLE "users" ADD FOREIGN KEY ("role_id") REFERENCES "user_roles" ("role_id");
+ALTER TABLE "users" ADD FOREIGN KEY ("users_role_id") REFERENCES "user_roles" ("role_id");
 

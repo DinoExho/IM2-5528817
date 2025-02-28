@@ -150,15 +150,15 @@ ALTER TABLE account ENABLE ROW LEVEL SECURITY;
 CREATE POLICY customers_customer_policy ON customers USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND u.user_id = customers.user_id));
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY transaction_customer_policy ON transaction USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = transaction_records.account_id));
-ALTER TABLE transaction ENABLE ROW LEVEL SECURITY;
+CREATE POLICY transaction_customer_policy ON transaction_records USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = transaction_records.account_id));
+ALTER TABLE transaction_records ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY loan_customer_policy ON loan USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = loan_information.account_id));
-ALTER TABLE loan ENABLE ROW LEVEL SECURITY;
+CREATE POLICY loan_customer_policy ON loan_information USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = loan_information.account_id));
+ALTER TABLE loan_information ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY employee_bank_manager_policy ON employees USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'bank_managers')));
 CREATE POLICY employee_loan_officer_policy ON employees USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'loan_officers')));
-CREATE POLICY employee_teller_policy ON employee USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'tellers')));
+CREATE POLICY employee_teller_policy ON employees USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'tellers')));
 ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY audit_trail_bank_manager_policy ON audit_trail USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'bank_managers')));

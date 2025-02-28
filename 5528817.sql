@@ -378,7 +378,7 @@ BEGIN
         RETURN NEW;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 
 CREATE TRIGGER database_user_creation_trigger
@@ -413,8 +413,7 @@ BEGIN
       WHEN 'INSERT' THEN 'INSERTED'
       WHEN 'UPDATE' THEN 'UPDATED'
       WHEN 'DELETE' THEN 'DELETED'
-    END, TG_TABLE_NAME || '.' || TG_TABLE_NAME.audit_id::text);
-   RETURN NULL; 
+    ,TG_TABLE_NAME || '.' || TG_TABLE_NAME.audit_id::text); 
 END;
 $$;
 

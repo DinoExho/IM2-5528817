@@ -412,7 +412,7 @@ BEGIN
       WHEN 'INSERT' THEN 'INSERTED'
       WHEN 'UPDATE' THEN 'UPDATED'
       WHEN 'DELETE' THEN 'DELETED'
-    ,TG_TABLE_NAME || '.' || TG_TABLE_NAME.audit_id::text); 
+    END,TG_TABLE_NAME || '.' || TG_TABLE_NAME.audit_id::text); 
 END;
 $$;
 

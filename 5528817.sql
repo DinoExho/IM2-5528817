@@ -139,8 +139,25 @@ CREATE TABLE "audit_trail" (
 REVOKE ALL ON TABLE audit_trail FROM PUBLIC;
 GRANT SELECT ON TABLE audit_trail to bank_managers;
 
------------------------------------------------
+------------------------------------------------------------
 
+-------------------- TABLE FOREIGN KEYS --------------------
+
+ALTER TABLE "account" ADD FOREIGN KEY ("account_customer_id") REFERENCES "customers" ("customer_id");
+
+ALTER TABLE "transaction_records" ADD FOREIGN KEY ("transaction_account_id") REFERENCES "account" ("account_id");
+
+ALTER TABLE "loan_information" ADD FOREIGN KEY ("loan_account_id") REFERENCES "account" ("account_id");
+
+ALTER TABLE "audit_trail" ADD FOREIGN KEY ("audit_account_id") REFERENCES "account" ("account_id");
+
+ALTER TABLE "employees" ADD FOREIGN KEY ("employees_user_id") REFERENCES "users" ("user_id");
+
+ALTER TABLE "customers" ADD FOREIGN KEY ("customers_user_id") REFERENCES "users" ("user_id");
+
+ALTER TABLE "users" ADD FOREIGN KEY ("users_role_id") REFERENCES "user_roles" ("role_id");
+
+-------------------------------------------------
 
 -------------------- POLICIES --------------------
 
@@ -432,21 +449,3 @@ FOR EACH ROW
 EXECUTE PROCEDURE audit_logger();
 
 ------------------------------------------------------------
-
-
--------------------- TABLE FOREIGN KEYS --------------------
-
-ALTER TABLE "account" ADD FOREIGN KEY ("account_customer_id") REFERENCES "customers" ("customer_id");
-
-ALTER TABLE "transaction_records" ADD FOREIGN KEY ("transaction_account_id") REFERENCES "account" ("account_id");
-
-ALTER TABLE "loan_information" ADD FOREIGN KEY ("loan_account_id") REFERENCES "account" ("account_id");
-
-ALTER TABLE "audit_trail" ADD FOREIGN KEY ("audit_account_id") REFERENCES "account" ("account_id");
-
-ALTER TABLE "employees" ADD FOREIGN KEY ("employees_user_id") REFERENCES "users" ("user_id");
-
-ALTER TABLE "customers" ADD FOREIGN KEY ("customers_user_id") REFERENCES "users" ("user_id");
-
-ALTER TABLE "users" ADD FOREIGN KEY ("users_role_id") REFERENCES "user_roles" ("role_id");
-

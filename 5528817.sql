@@ -48,11 +48,11 @@ CREATE TABLE "transaction_records" (
   "description" text NOT NULL
 );
 
-REVOKE ALL ON TABLE transactions_records FROM PUBLIC;
-GRANT SELECT ON TABLE transactions_records to bank_managers;
-GRANT SELECT ON TABLE transactions_records to loan_officers;
-GRANT SELECT ON TABLE transactions_records to tellers;
-GRANT SELECT ON TABLE transactions_records to customers;
+REVOKE ALL ON TABLE transaction_records FROM PUBLIC;
+GRANT SELECT ON TABLE transaction_records to bank_managers;
+GRANT SELECT ON TABLE transaction_records to loan_officers;
+GRANT SELECT ON TABLE transaction_records to tellers;
+GRANT SELECT ON TABLE transaction_records to customers;
 
 CREATE TABLE "employees" (
   "employee_id" serial NOT NULL,
@@ -105,7 +105,7 @@ CREATE TABLE "users" (
 REVOKE ALL ON TABLE users FROM PUBLIC;
 GRANT ALL ON TABLE users to bank_managers;
 GRANT SELECT ON TABLE users to loan_officers;
-GRANT SELECT ON TABLE users tellers;
+GRANT SELECT ON TABLE users to tellers;
 GRANT SELECT ON TABLE users to customers;
 
 
@@ -144,16 +144,16 @@ GRANT SELECT ON TABLE audit_trail to bank_managers;
 
 -------------------- POLICIES --------------------
 
-CREATE POLICY account_customer_policy ON account USING (EXISTS (SELECT 1 FROM users u JOIN customer c ON u.user_id = c.user_id WHERE u.username = current_user AND c.customer_id = account.customer_id));
+CREATE POLICY account_customer_policy ON account USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.user_id WHERE u.username = current_user AND c.customer_id = account.customer_id));
 ALTER TABLE account ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY customer_customer_policy ON customer USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND u.user_id = customer.user_id));
-ALTER TABLE customer ENABLE ROW LEVEL SECURITY;
+CREATE POLICY customer_customer_policy ON customers USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND u.user_id = customer.user_id));
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY transaction_customer_policy ON transaction USING (EXISTS (SELECT 1 FROM users u JOIN customer c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = transaction.account_id));
+CREATE POLICY transaction_customer_policy ON transaction USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = transaction.account_id));
 ALTER TABLE transaction ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY loan_customer_policy ON loan USING (EXISTS (SELECT 1 FROM users u JOIN customer c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = loan.account_id));
+CREATE POLICY loan_customer_policy ON loan USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = loan.account_id));
 ALTER TABLE loan ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY employee_bank_manager_policy ON employee USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'bank_managers')));
@@ -181,15 +181,15 @@ FROM account;
 
 CREATE OR REPLACE VIEW BankManager_Customer AS
 SELECT customer_id, forename, surname, dob, email, phone, address
-FROM customer;
+FROM customers;
 
 CREATE OR REPLACE VIEW LoanOfficer_Customer AS
 SELECT customer_id, forename, surname, dob, email, phone, address
-FROM customer;
+FROM customers;
 
 CREATE OR REPLACE VIEW Customer_Customer AS
 SELECT customer_id, forename, surname, dob, email, phone, address
-FROM customer;
+FROM customers;
 
 
 CREATE OR REPLACE VIEW BankManager_Transaction AS
@@ -207,28 +207,28 @@ FROM transaction;
 
 CREATE OR REPLACE VIEW BankManager_Loan AS
 SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
-FROM loan;
+FROM loan_information;
 
 CREATE OR REPLACE VIEW LoanOfficer_Loan AS
 SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
-FROM loan;
+FROM loan_information;
 
 CREATE OR REPLACE VIEW Customer_Loan AS
 SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
-FROM loan;
+FROM loan_information;
 
 
 CREATE OR REPLACE VIEW BankManager_Employee AS
 SELECT employee_id, forename, surname, email, phone, job_title, user_id
-FROM employee;
+FROM employees;
 
 CREATE OR REPLACE VIEW LoanOfficer_Employee AS
 SELECT employee_id, forename, surname, email, phone, job_title, user_id
-FROM employee;
+FROM employees;
 
 CREATE OR REPLACE VIEW Teller_Employee AS
 SELECT employee_id, forename, surname, email, phone, job_title, user_id
-FROM employee;
+FROM employees;
 
 
 CREATE OR REPLACE VIEW BankManager_AuditTrail AS
@@ -275,7 +275,6 @@ GRANT SELECT ON LoanOfficer_Employee TO loan_officers;
 GRANT SELECT ON Teller_Employee TO tellers;
 
 GRANT SELECT ON BankManager_AuditTrail TO bank_managers;
-GRANT SELECT ON LoanOfficer_AuditTrail TO loan_officers;
 
 GRANT SELECT ON BankManager_UserRoles TO bank_managers;
 

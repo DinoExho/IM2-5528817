@@ -21,32 +21,32 @@ echo '1 - create user roles - expected outcome: success'
 PGPASSWORD=postgres psql -U postgres -d 5528817 -c "INSERT INTO user_roles(role_name) VALUES ('bank_manager'),('loan_officer'),('teller'),('customer');"
 echo ''
 echo '2 - create bank manager - expected outcome: success'
-PGPASSWORD=postgres psql -U postgres -d 5528817 -c "INSERT INTO users (username, password, role_id, last_login) VALUES ('bjones', 'S3curePword!', 2, '2023-10-26 11:30:00');"
+PGPASSWORD=postgres psql -U postgres -d 5528817 -c "INSERT INTO users (username, password, user_role_id, last_login) VALUES ('bjones', 'S3curePword!', 2, '2023-10-26 11:30:00');"
 echo ''
 echo '3 - create bank manager - expected outcome: success'
-PGPASSWORD=postgres psql -U postgres -d 5528817 -c "INSERT INTO employees (forename, surname, email, phone, job_title, user_id) VALUES ('Benjamin', 'Jones', 'benjamin.jones@example.com', '07800 123456', 'bank_manager', 1);"
+PGPASSWORD=postgres psql -U postgres -d 5528817 -c "INSERT INTO employees (forename, surname, email, phone, job_title, employee_user_id) VALUES ('Benjamin', 'Jones', 'benjamin.jones@example.com', '07800 123456', 'bank_manager', 1);"
 echo ''
 echo ''
 echo '----------------- Test Data as bank manager -----------------'
 echo ''
 echo ''
 echo '4 - create loan officer - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO users (username, password, role_id, last_login) VALUES ('jdoe', 'yLBZNz39TZTK', 2, '2025-02-14 21:14:00'); INSERT INTO employees (forename, surname, email, phone, job_title, user_id) VALUES ('John', 'Doe', 'John.doe@example.com', '07700 123456', 'loan officer', 2);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO users (username, password, user_role_id, last_login) VALUES ('jdoe', 'yLBZNz39TZTK', 2, '2025-02-14 21:14:00'); INSERT INTO employees (forename, surname, email, phone, job_title, user_id) VALUES ('John', 'Doe', 'John.doe@example.com', '07700 123456', 'loan officer', 2);"
 echo ''
 echo '5 - create loan officer - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO employees (forename, surname, email, phone, job_title, user_id) VALUES ('John', 'Doe', 'John.doe@example.com', '07700 123456', 'loan officer', 2);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO employees (forename, surname, email, phone, job_title, employee_user_id) VALUES ('John', 'Doe', 'John.doe@example.com', '07700 123456', 'loan officer', 2);"
 echo ''
 echo '6 - create teller - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO users (username, password, role_id, last_login) VALUES ('cjohnson', 'AN8jv2uZvyaJ', 3, '2025-01-02 18:43:00');"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO users (username, password, user_role_id, last_login) VALUES ('cjohnson', 'AN8jv2uZvyaJ', 3, '2025-01-02 18:43:00');"
 echo ''
 echo '7 - create teller - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO employees (forename, surname, email, phone, job_title, user_id) VALUES ('Carol', 'Johnson', 'carol.johnson@example.com', '07500 456789', 'teller', 3);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO employees (forename, surname, email, phone, job_title, employee_user_id) VALUES ('Carol', 'Johnson', 'carol.johnson@example.com', '07500 456789', 'teller', 3);"
 echo ''
 echo '8 - create customer - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO users (username, password, role_id, last_login) VALUES ('pbrown', 'GkbfZ7Z7TD8j', 4, '2024-12-27 9:51:00'); INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO users (username, password, user_role_id, last_login) VALUES ('pbrown', 'GkbfZ7Z7TD8j', 4, '2024-12-27 9:51:00'); INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
 echo ''
 echo '9 - create customer - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, customer_user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
 echo ''
 echo '10 - view account audit trail - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "account_audit_trail"(1);"

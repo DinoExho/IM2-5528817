@@ -24,7 +24,7 @@ GRANT USAGE ON SCHEMA public TO customers;
 -------------------- TABLES --------------------
 CREATE TABLE "account" (
   "account_id" serial NOT NULL,
-  "customer_id" integer NOT NULL,
+  "account_customer_id" integer NOT NULL,
   "account_type" varchar NOT NULL,
   "balance" money NOT NULL,
   "open_date" date NOT NULL,
@@ -40,7 +40,7 @@ GRANT SELECT ON TABLE account to customers;
 
 CREATE TABLE "transaction_records" (
   "transaction_id" serial NOT NULL,
-  "account_id" integer NOT NULL,
+  "transaction_account_id" integer NOT NULL,
   "transaction_type" varchar NOT NULL,
   "transaction_timestamp" timestamp NOT NULL,
   "amount" money NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE "employees" (
   "email" varchar NOT NULL,
   "phone" varchar NOT NULL,
   "job_title" varchar NOT NULL,
-  "user_id" integer NOT NULL
+  "employee_user_id" integer NOT NULL
 );
 
 REVOKE ALL ON TABLE employees FROM PUBLIC;
@@ -71,7 +71,7 @@ GRANT SELECT ON TABLE employees to tellers;
 
 CREATE TABLE "loan_information" (
   "loan_id" serial NOT NULL,
-  "account_id" integer NOT NULL,
+  "loan_account_id" integer NOT NULL,
   "original_amount" money NOT NULL,
   "interest_rate" decimal NOT NULL,
   "loan_term" varchar NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE "users" (
   "user_id" serial NOT NULL,
   "username" varchar NOT NULL,
   "password" varchar NOT NULL,
-  "role_id" integer NOT NULL,
+  "user_role_id" integer NOT NULL,
   "last_login" text NOT NULL
 );
 
@@ -117,7 +117,7 @@ CREATE TABLE "customers" (
   "email" varchar NOT NULL,
   "phone" varchar NOT NULL,
   "address" text NOT NULL,
-  "user_id" integer NOT NULL
+  "customer_user_id" integer NOT NULL
 );
 
 REVOKE ALL ON TABLE customers FROM PUBLIC;
@@ -128,7 +128,7 @@ GRANT SELECT ON TABLE customers to customers;
 
 CREATE TABLE "audit_trail" (
   "audit_id" serial NOT NULL,
-  "account_id" integer NOT NULL,
+  "audit_account_id" integer NOT NULL,
   "audit_timestamp" timestamp NOT NULL,
   "action_details" text NOT NULL,
   "affected_record" varchar NOT NULL,
@@ -151,11 +151,11 @@ ALTER TABLE "loan_information" ADD FOREIGN KEY ("loan_account_id") REFERENCES "a
 
 ALTER TABLE "audit_trail" ADD FOREIGN KEY ("audit_account_id") REFERENCES "account" ("account_id");
 
-ALTER TABLE "employees" ADD FOREIGN KEY ("employees_user_id") REFERENCES "users" ("user_id");
+ALTER TABLE "employees" ADD FOREIGN KEY ("employee_user_id") REFERENCES "users" ("user_id");
 
-ALTER TABLE "customers" ADD FOREIGN KEY ("customers_user_id") REFERENCES "users" ("user_id");
+ALTER TABLE "customers" ADD FOREIGN KEY ("customer_user_id") REFERENCES "users" ("user_id");
 
-ALTER TABLE "users" ADD FOREIGN KEY ("users_role_id") REFERENCES "user_roles" ("role_id");
+ALTER TABLE "users" ADD FOREIGN KEY ("user_role_id") REFERENCES "user_roles" ("role_id");
 
 -------------------------------------------------
 

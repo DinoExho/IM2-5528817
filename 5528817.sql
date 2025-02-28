@@ -142,20 +142,22 @@ GRANT SELECT ON TABLE audit_trail to bank_managers;
 ------------------------------------------------------------
 
 -------------------- TABLE FOREIGN KEYS --------------------
+ALTER TABLE ONLY public.appointments
+	ADD CONSTRAINT patient_id FOREIGN KEY (patient_id) REFERENCES public.patients(patients_id);
 
-ALTER TABLE "account" ADD FOREIGN KEY ("account_customer_id") REFERENCES "customers" ("customer_id");
+ALTER TABLE ONLY "account" ADD CONSTRAINT patient_id FOREIGN KEY ("account_customer_id") REFERENCES "customers" ("customer_id");
 
-ALTER TABLE "transaction_records" ADD FOREIGN KEY ("transaction_account_id") REFERENCES "account" ("account_id");
+ALTER TABLE ONLY "transaction_records" ADD CONSTRAINT patient_id FOREIGN KEY ("transaction_account_id") REFERENCES "account" ("account_id");
 
-ALTER TABLE "loan_information" ADD FOREIGN KEY ("loan_account_id") REFERENCES "account" ("account_id");
+ALTER TABLE ONLY "loan_information" ADD CONSTRAINT patient_id FOREIGN KEY ("loan_account_id") REFERENCES "account" ("account_id");
 
-ALTER TABLE "audit_trail" ADD FOREIGN KEY ("audit_account_id") REFERENCES "account" ("account_id");
+ALTER TABLE ONLY "audit_trail" ADD CONSTRAINT patient_id FOREIGN KEY ("audit_account_id") REFERENCES "account" ("account_id");
 
-ALTER TABLE "employees" ADD FOREIGN KEY ("employee_user_id") REFERENCES "users" ("user_id");
+ALTER TABLE ONLY "employees" ADD CONSTRAINT patient_id FOREIGN KEY ("employee_user_id") REFERENCES "users" ("user_id");
 
-ALTER TABLE "customers" ADD FOREIGN KEY ("customer_user_id") REFERENCES "users" ("user_id");
+ALTER TABLE ONLY "customers" ADD CONSTRAINT patient_id FOREIGN KEY ("customer_user_id") REFERENCES "users" ("user_id");
 
-ALTER TABLE "users" ADD FOREIGN KEY ("user_role_id") REFERENCES "user_roles" ("role_id");
+ALTER TABLE ONLY "users" ADD CONSTRAINT patient_id FOREIGN KEY ("user_role_id") REFERENCES "user_roles" ("role_id");
 
 -------------------------------------------------
 
@@ -164,7 +166,7 @@ ALTER TABLE "users" ADD FOREIGN KEY ("user_role_id") REFERENCES "user_roles" ("r
 CREATE POLICY account_customer_policy ON account USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.customer_user_id WHERE u.username = current_user AND c.customer_id = account.account_customer_id));
 ALTER TABLE account ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY customers_customer_policy ON customers USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND u.user_id = customers.customer_user_id));
+CREATE POLICY customers_customer_policy ON customers USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.user_role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND u.user_id = customers.customer_user_id));
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY transaction_customer_policy ON transaction_records USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.customer_user_id JOIN account a ON c.customer_id = a.account_customer_id WHERE u.username = current_user AND u.user_role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = transaction_records.transaction_account_id));

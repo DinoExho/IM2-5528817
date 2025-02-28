@@ -161,38 +161,38 @@ ALTER TABLE "users" ADD FOREIGN KEY ("user_role_id") REFERENCES "user_roles" ("r
 
 -------------------- POLICIES --------------------
 
-CREATE POLICY account_customer_policy ON account USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.user_id WHERE u.username = current_user AND c.customer_id = account.customer_id));
+CREATE POLICY account_customer_policy ON account USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.customer_user_id WHERE u.username = current_user AND c.customer_id = account.account_customer_id));
 ALTER TABLE account ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY customers_customer_policy ON customers USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND u.user_id = customers.user_id));
+CREATE POLICY customers_customer_policy ON customers USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND u.user_id = customers.customer_user_id));
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY transaction_customer_policy ON transaction_records USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = transaction_records.account_id));
+CREATE POLICY transaction_customer_policy ON transaction_records USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.customer_user_id JOIN account a ON c.customer_id = a.account_customer_id WHERE u.username = current_user AND u.user_role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = transaction_records.transaction_account_id));
 ALTER TABLE transaction_records ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY loan_customer_policy ON loan_information USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.user_id JOIN account a ON c.customer_id = a.customer_id WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = loan_information.account_id));
+CREATE POLICY loan_customer_policy ON loan_information USING (EXISTS (SELECT 1 FROM users u JOIN customers c ON u.user_id = c.customer_user_id JOIN account a ON c.customer_id = a.account_customer_id WHERE u.username = current_user AND u.user_role_id = (SELECT role_id FROM user_roles WHERE role_name = 'customers') AND a.account_id = loan_information.loan_account_id));
 ALTER TABLE loan_information ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY employee_bank_manager_policy ON employees USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'bank_managers')));
-CREATE POLICY employee_loan_officer_policy ON employees USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'loan_officers')));
-CREATE POLICY employee_teller_policy ON employees USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'tellers')));
+CREATE POLICY employee_bank_manager_policy ON employees USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.user_role_id = (SELECT role_id FROM user_roles WHERE role_name = 'bank_managers')));
+CREATE POLICY employee_loan_officer_policy ON employees USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.user_role_id = (SELECT role_id FROM user_roles WHERE role_name = 'loan_officers')));
+CREATE POLICY employee_teller_policy ON employees USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.user_role_id = (SELECT role_id FROM user_roles WHERE role_name = 'tellers')));
 ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY audit_trail_bank_manager_policy ON audit_trail USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.role_id = (SELECT role_id FROM user_roles WHERE role_name = 'bank_managers')));
+CREATE POLICY audit_trail_bank_manager_policy ON audit_trail USING (EXISTS (SELECT 1 FROM users u WHERE u.username = current_user AND u.user_role_id = (SELECT role_id FROM user_roles WHERE role_name = 'bank_managers')));
 ALTER TABLE audit_trail ENABLE ROW LEVEL SECURITY;
 
 -------------------- VIEWS --------------------
 
 CREATE OR REPLACE VIEW BankManager_Account AS
-SELECT account_id, customer_id, account_type, balance, open_date, account_status
+SELECT account_id, account_customer_id, account_type, balance, open_date, account_status
 FROM account;
 
 CREATE OR REPLACE VIEW LoanOfficer_Account AS
-SELECT account_id, customer_id, account_type, balance, open_date, account_status
+SELECT account_id, account_customer_id, account_type, balance, open_date, account_status
 FROM account;
 
 CREATE OR REPLACE VIEW Customer_Account AS
-SELECT account_id, account_type, balance, open_date, account_status
+SELECT account_id, account_customer_id, balance, open_date, account_status
 FROM account;
 
 
@@ -210,46 +210,46 @@ FROM customers;
 
 
 CREATE OR REPLACE VIEW BankManager_Transaction AS
-SELECT transaction_id, account_id, transaction_type, transaction_timestamp, amount, payment_method, description
+SELECT transaction_id, transaction_account_id, transaction_type, transaction_timestamp, amount, payment_method, description
 FROM transaction_records;
 
 CREATE OR REPLACE VIEW LoanOfficer_Transaction AS
-SELECT transaction_id, account_id, transaction_type, transaction_timestamp, amount, payment_method, description
+SELECT transaction_id, transaction_account_id, transaction_type, transaction_timestamp, amount, payment_method, description
 FROM transaction_records;
 
 CREATE OR REPLACE VIEW Teller_Transaction AS
-SELECT transaction_id, account_id, transaction_type, transaction_timestamp, amount, payment_method, description
+SELECT transaction_id, transaction_account_id, transaction_type, transaction_timestamp, amount, payment_method, description
 FROM transaction_records;
 
 
 CREATE OR REPLACE VIEW BankManager_Loan AS
-SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
+SELECT loan_id, loan_account_id, original_amount, interest_rate, loan_term, start_date, end_date
 FROM loan_information;
 
 CREATE OR REPLACE VIEW LoanOfficer_Loan AS
-SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
+SELECT loan_id, loan_account_id, original_amount, interest_rate, loan_term, start_date, end_date
 FROM loan_information;
 
 CREATE OR REPLACE VIEW Customer_Loan AS
-SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date
+SELECT loan_id, loan_account_id, original_amount, interest_rate, loan_term, start_date, end_date
 FROM loan_information;
 
 
 CREATE OR REPLACE VIEW BankManager_Employee AS
-SELECT employee_id, forename, surname, email, phone, job_title, user_id
+SELECT employee_id, forename, surname, email, phone, job_title, employee_user_id
 FROM employees;
 
 CREATE OR REPLACE VIEW LoanOfficer_Employee AS
-SELECT employee_id, forename, surname, email, phone, job_title, user_id
+SELECT employee_id, forename, surname, email, phone, job_title, employee_user_id
 FROM employees;
 
 CREATE OR REPLACE VIEW Teller_Employee AS
-SELECT employee_id, forename, surname, email, phone, job_title, user_id
+SELECT employee_id, forename, surname, email, phone, job_title, employee_user_id
 FROM employees;
 
 
 CREATE OR REPLACE VIEW BankManager_AuditTrail AS
-SELECT audit_id, account_id, audit_timestamp, action_details, affected_record, old_data, new_data
+SELECT audit_id, audit_account_id, audit_timestamp, action_details, affected_record, old_data, new_data
 FROM audit_trail;
 
 
@@ -259,11 +259,11 @@ FROM user_roles;
 
 
 CREATE OR REPLACE VIEW BankManager_Users AS
-SELECT user_id, username, role_id, last_login
+SELECT user_id, username, user_role_id, last_login
 FROM users;
 
 CREATE OR REPLACE VIEW LoanOfficer_Users AS
-SELECT user_id, username, role_id, last_login
+SELECT user_id, username, user_role_id, last_login
 FROM users;
 
 ---------------------------------------------------
@@ -304,14 +304,14 @@ GRANT SELECT ON LoanOfficer_Users TO loan_officers;
 -------------------- FUNCTIONS --------------------
 
 CREATE OR REPLACE FUNCTION account_audit_trail(p_account_id INT)
-RETURNS TABLE (audit_id integer, account_id integer, audit_timestamp TIMESTAMP WITH TIME ZONE, action_details text, affected_record varchar, old_data text, new_data text)
+RETURNS TABLE (audit_id integer, audit_account_id integer, audit_timestamp TIMESTAMP WITH TIME ZONE, action_details text, affected_record varchar, old_data text, new_data text)
 LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
     SELECT
         audit_id,
-	account_id, 
+	audit_account_id, 
 	audit_timestamp, 
 	action_details, 
 	affected_record,
@@ -340,10 +340,10 @@ BEGIN
 
   UPDATE account SET balance = balance - p_amount WHERE account_id = p_account_id;
 
-  INSERT INTO transaction (account_id, transaction_type, amount, payment_method, description)
+  INSERT INTO transaction (transaction_account_id, transaction_type, amount, payment_method, description)
   VALUES (p_account_id, 'Withdrawal', p_amount, 'Transfer', 'Withdrawal'); 
 
-  INSERT INTO audit_trail (account_id, audit_timestamp, action_details, affected_record, old_data, new_data)
+  INSERT INTO audit_trail (audit_account_id, audit_timestamp, action_details, affected_record, old_data, new_data)
   VALUES (p_account_id, NOW(), 'Withdrawal', 'account', balance + p_amount, balance);
 
   RETURN TRUE;
@@ -362,10 +362,10 @@ BEGIN
 
   UPDATE account SET balance = balance + p_amount WHERE account_id = p_account_id;
 
-  INSERT INTO transaction (account_id, transaction_type, amount, payment_method, description)
+  INSERT INTO transaction (transaction_account_id, transaction_type, amount, payment_method, description)
   VALUES (p_account_id, 'Deposit', p_amount, 'Transfer', 'Deposit');
 
-  INSERT INTO audit_trail (account_id, audit_timestamp, action_details, affected_record, old_data, new_data)
+  INSERT INTO audit_trail (audit_account_id, audit_timestamp, action_details, affected_record, old_data, new_data)
   VALUES (p_account_id, NOW(), 'Deposit', 'account', balance - p_amount, balance);
 
   RETURN TRUE;
@@ -406,8 +406,8 @@ EXECUTE FUNCTION user_trigger();
 
 -------------------- FUNCTIONS SECURITY --------------------
 
-REVOKE ALL ON FUNCTION account_audit_trail(account_id INT) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION account_audit_trail(account_id INT) to bank_managers;
+REVOKE ALL ON FUNCTION account_audit_trail(audit_account_id INT) FROM PUBLIC; 
+GRANT SELECT ON FUNCTION account_audit_trail(audit_account_id INT) to bank_managers;
 
 REVOKE ALL ON FUNCTION withdraw(p_account_id INT, p_amount NUMERIC) FROM PUBLIC; 
 GRANT SELECT ON FUNCTION withdraw(p_account_id INT, p_amount NUMERIC) to customers;
@@ -423,7 +423,7 @@ RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
 BEGIN
-  INSERT INTO audit_trail (account_id, audit_timestamp, action_details, affected_record, old_data, new_data)
+  INSERT INTO audit_trail (audit_account_id, audit_timestamp, action_details, affected_record, old_data, new_data)
   VALUES (TG_TABLE_NAME.account_id, now(),
     CASE TG_OP
       WHEN 'INSERT' THEN 'INSERTED'

@@ -4,16 +4,16 @@ CREATE ROLE tellers;
 CREATE ROLE loan_officers;
 
 CREATE USER bjones WITH PASSWORD 'WLNHj3RdEQ5F' LOGIN;
-GRANT bank_managers TO bank_manager1;
+GRANT bank_managers TO bjones;
 
 CREATE USER jdoe WITH PASSWORD 'yLBZNz39TZTK' LOGIN;
-GRANT loan_officers TO loan_officer1;
+GRANT loan_officers TO jdoe;
 
 CREATE USER cjohnson WITH PASSWORD 'AN8jv2uZvyaJ' LOGIN;
-GRANT tellers TO teller1;
+GRANT tellers TO cjohnson;
 
 CREATE USER pbrown WITH PASSWORD 'GkbfZ7Z7TD8j' LOGIN;
-GRANT customers TO customer1;
+GRANT customers TO pbrown;
 
 
 GRANT USAGE ON SCHEMA public TO bank_managers;

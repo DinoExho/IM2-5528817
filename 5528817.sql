@@ -142,22 +142,19 @@ GRANT SELECT ON TABLE audit_trail to bank_managers;
 ------------------------------------------------------------
 
 -------------------- TABLE FOREIGN KEYS --------------------
-ALTER TABLE ONLY public.appointments
-	ADD CONSTRAINT patient_id FOREIGN KEY (patient_id) REFERENCES public.patients(patients_id);
+ALTER TABLE ONLY "account" ADD CONSTRAINT customer_id FOREIGN KEY ("customer_id") REFERENCES "customers" ("customer_id");
 
-ALTER TABLE ONLY "account" ADD CONSTRAINT account_customer_id FOREIGN KEY ("account_customer_id") REFERENCES "customers" ("customer_id");
+ALTER TABLE ONLY "transaction_records" ADD CONSTRAINT account_id FOREIGN KEY ("account_id") REFERENCES "account" ("account_id");
 
-ALTER TABLE ONLY "transaction_records" ADD CONSTRAINT transaction_account_id FOREIGN KEY ("transaction_account_id") REFERENCES "account" ("account_id");
+ALTER TABLE ONLY "loan_information" ADD CONSTRAINT account_id FOREIGN KEY ("account_id") REFERENCES "account" ("account_id");
 
-ALTER TABLE ONLY "loan_information" ADD CONSTRAINT loan_account_id FOREIGN KEY ("loan_account_id") REFERENCES "account" ("account_id");
+ALTER TABLE ONLY "audit_trail" ADD CONSTRAINT account_id FOREIGN KEY ("account_id") REFERENCES "account" ("account_id");
 
-ALTER TABLE ONLY "audit_trail" ADD CONSTRAINT audit_account_id FOREIGN KEY ("audit_account_id") REFERENCES "account" ("account_id");
+ALTER TABLE ONLY "employees" ADD CONSTRAINT user_id FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
 
-ALTER TABLE ONLY "employees" ADD CONSTRAINT employee_user_id FOREIGN KEY ("employee_user_id") REFERENCES "users" ("user_id");
+ALTER TABLE ONLY "customers" ADD CONSTRAINT user_id FOREIGN KEY ("user_id") REFERENCES "users" ("user_id");
 
-ALTER TABLE ONLY "customers" ADD CONSTRAINT customer_user_id FOREIGN KEY ("customer_user_id") REFERENCES "users" ("user_id");
-
-ALTER TABLE ONLY "users" ADD CONSTRAINT user_role_id FOREIGN KEY ("user_role_id") REFERENCES "user_roles" ("role_id");
+ALTER TABLE ONLY "users" ADD CONSTRAINT role_id FOREIGN KEY ("role_id") REFERENCES "user_roles" ("role_id");
 
 -------------------------------------------------
 

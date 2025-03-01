@@ -381,7 +381,7 @@ AS $$
 DECLARE
 	sql_query TEXT;
 BEGIN
-    IF NEW.username IS NOT NULL AND NEW.password IS NOT NULL AND NEW.role_id IS NOT NULL THEN
+    IF NEW.username IS NOT NULL AND NEW.password IS NOT NULL AND NEW.user_role_id IS NOT NULL THEN
         sql_query := format('CREATE USER %I WITH PASSWORD %L');
 	EXECUTE sql_query USING NEW.username, NEW.password;
        

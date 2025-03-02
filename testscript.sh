@@ -172,7 +172,7 @@ echo '44 - check cannot access audit_trail - expected outcome: fail'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM audit_trail;"
 echo ''
 echo '45 - check transactions_record table view - expected outcome: success'
-PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM Customer_Transactions;"
+PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM Customer_Transaction;"
 echo ''
 echo '46 - check employees table view - expected outcome: fail'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM employees;"

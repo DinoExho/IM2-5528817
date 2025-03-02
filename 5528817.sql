@@ -266,10 +266,6 @@ CREATE OR REPLACE VIEW BankManager_Users AS
 SELECT user_id, username, role_id, last_login
 FROM users;
 
-CREATE OR REPLACE VIEW LoanOfficer_Users AS
-SELECT user_id, username, role_id, last_login
-FROM users;
-
 ---------------------------------------------------
 
 -------------------- VIEWS SECURITY --------------------
@@ -277,6 +273,7 @@ FROM users;
 
 GRANT SELECT ON BankManager_Account TO bank_managers;
 GRANT SELECT ON LoanOfficer_Account TO loan_officers;
+GRANT SELECT ON Teller_Account TO tellers;
 GRANT SELECT ON Customer_Account TO customers;
 
 GRANT SELECT ON BankManager_Customer TO bank_managers;
@@ -286,6 +283,7 @@ GRANT SELECT ON Customer_Customer TO customers;
 GRANT SELECT ON BankManager_Transaction TO bank_managers;
 GRANT SELECT ON LoanOfficer_Transaction TO loan_officers;
 GRANT SELECT ON Teller_Transaction TO tellers;
+GRANT SELECT ON Customer_Transaction TO customers;
 
 GRANT SELECT ON BankManager_Loan TO bank_managers;
 GRANT SELECT ON LoanOfficer_Loan TO loan_officers;
@@ -300,7 +298,6 @@ GRANT SELECT ON BankManager_AuditTrail TO bank_managers;
 GRANT SELECT ON BankManager_UserRoles TO bank_managers;
 
 GRANT SELECT ON BankManager_Users TO bank_managers;
-GRANT SELECT ON LoanOfficer_Users TO loan_officers;
 
 
 --------------------------------------------------------

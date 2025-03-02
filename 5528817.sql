@@ -106,10 +106,6 @@ CREATE TABLE "users" (
 
 REVOKE ALL ON TABLE users FROM PUBLIC;
 GRANT ALL ON TABLE users to bank_managers;
-GRANT SELECT ON TABLE users to loan_officers;
-GRANT SELECT ON TABLE users to tellers;
-GRANT SELECT ON TABLE users to customers;
-
 
 CREATE TABLE "customers" (
   "customer_id" serial NOT NULL,
@@ -222,6 +218,9 @@ CREATE OR REPLACE VIEW Teller_Transaction AS
 SELECT transaction_id, account_id, transaction_type, transaction_timestamp, amount, payment_method, description
 FROM transaction_records;
 
+CREATE OR REPLACE VIEW Customer_Transaction AS
+SELECT transaction_type, transaction_timestamp, amount, payment_method, description
+FROM transaction_records;
 
 CREATE OR REPLACE VIEW BankManager_Loan AS
 SELECT loan_id, account_id, original_amount, interest_rate, loan_term, start_date, end_date

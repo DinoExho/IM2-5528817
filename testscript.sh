@@ -145,16 +145,16 @@ echo '37 - deposit function - expected outcome: success'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT "deposit"(1);"
 echo ''
 echo '38 - check customer table view - expected outcome: success'
-PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT "Customer_Customer"(1);"
+PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM Customer_Customer;"
 echo ''
 echo '39 - check account table view - expected outcome: success'
-PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT "Customer_Account"(1);"
+PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM Customer_Account;"
 echo ''
 echo '40 - check cannot access audit_trail - expected outcome: fail'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM audit_trail;"
 echo ''
 echo '41 - check transactions_record table view - expected outcome: success'
-PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT "Customer_Transactions"(1);"
+PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM Customer_Transactions;"
 echo ''
 echo '42 - check employees table view - expected outcome: fail'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM employees;"
@@ -166,5 +166,6 @@ echo '44 - check cannot access user_roles - expected outcome: fail'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM user_roles;"
 echo ''
 echo '45 - check loan_information table view - expected outcome: success'
-PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT "Customer_Loan"(1);"
+PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM Customer_Loan;"
+echo ''
 echo ''

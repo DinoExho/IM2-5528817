@@ -48,124 +48,136 @@ echo ''
 echo '9 - create customer - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
 echo ''
-echo '10 - view account audit trail - expected outcome: success'
+echo '10 - create account - expected outcome: success'
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
+echo ''
+echo '11 - create account - expected outcome: success'
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
+echo ''
+echo '12 - create transaction_record - expected outcome: success'
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
+echo ''
+echo '13 - create loan_information - expected outcome: success'
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
+echo ''
+echo '14 - view account audit trail - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "account_audit_trail"(1);"
 echo ''
-echo '11 - check customer table view - expected outcome: success'
+echo '15 - check customer table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Customer;"
 echo ''
-echo '12 - check account table view - expected outcome: success'
+echo '16 - check account table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Account;"
 echo ''
-echo '13 - check audit_trail table view - expected outcome: success'
+echo '17 - check audit_trail table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Transaction;"
 echo ''
-echo '14 - check cannot insert/update/delete audit trail - expected outcome: fail'
+echo '18 - check cannot insert/update/delete audit trail - expected outcome: fail'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM audit_trail";
 echo ''
-echo '15 - check transactions_record table view - expected outcome: success'
+echo '19 - check transactions_record table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_AuditTrail;"
 echo ''
-echo '16 - check employees table view - expected outcome: success'
+echo '20 - check employees table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Employee;"
 echo ''
-echo '17 - check users table view - expected outcome: success'
+echo '21 - check users table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Users;"
 echo ''
-echo '18 - check user_roles table view - expected outcome: success'
+echo '22 - check user_roles table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_UserRoles;"
 echo ''
-echo '19 - check loan_information table view - expected outcome: success'
+echo '23 - check loan_information table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Loan;"
 echo ''
 echo ''
 echo '----------------- Test Data as loan officer -----------------'
 echo ''
 echo ''
-echo '20 - check customer table view - expected outcome: success'
+echo '24 - check customer table view - expected outcome: success'
 PGPASSWORD=yLBZNz39TZTK psql -U jdoe -d 5528817 -c "SELECT * FROM LoanOfficer_Customer;"
 echo ''
-echo '21 - check account table view - expected outcome: success'
+echo '25 - check account table view - expected outcome: success'
 PGPASSWORD=yLBZNz39TZTK psql -U jdoe -d 5528817 -c "SELECT * FROM LoanOfficer_Account;"
 echo ''
-echo '22 - check cannot access audit_Trail - expected outcome: fail'
+echo '26 - check cannot access audit_Trail - expected outcome: fail'
 PGPASSWORD=yLBZNz39TZTK psql -U jdoe -d 5528817 -c "SELECT * FROM audit_trail;"
 echo ''
-echo '23 - check transactions_record table view - expected outcome: success'
+echo '27 - check transactions_record table view - expected outcome: success'
 PGPASSWORD=yLBZNz39TZTK psql -U jdoe -d 5528817 -c "SELECT * FROM LoanOfficer_Transaction;"
 echo ''
-echo '24 - check employees table view - expected outcome: success'
+echo '28 - check employees table view - expected outcome: success'
 PGPASSWORD=yLBZNz39TZTK psql -U jdoe -d 5528817 -c "SELECT * FROM LoanOfficer_Employee;"
 echo ''
-echo '25 - check cannot access users - expected outcome: fail'
+echo '29 - check cannot access users - expected outcome: fail'
 PGPASSWORD=yLBZNz39TZTK psql -U jdoe -d 5528817 -c "SELECT * FROM users;"
 echo ''
-echo '26 - check cannot access user_roles - expected outcome: fail'
+echo '30 - check cannot access user_roles - expected outcome: fail'
 PGPASSWORD=yLBZNz39TZTK psql -U jdoe -d 5528817 -c "SELECT * FROM user_roles;"
 echo ''
-echo '27 - check loan_information table view - expected outcome: success'
+echo '31 - check loan_information table view - expected outcome: success'
 PGPASSWORD=yLBZNz39TZTK psql -U jdoe -d 5528817 -c "SELECT * FROM LoanOfficer_Loan;"
 echo ''
 echo ''
 echo '----------------- Test Data as teller -----------------'
 echo ''
 echo ''
-echo '28 - check cannot access customers - expected outcome: fail'
+echo '32 - check cannot access customers - expected outcome: fail'
 PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM customer;"
 echo ''
-echo '29 - check account table view - expected outcome: success'
+echo '33 - check account table view - expected outcome: success'
 PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM Teller_Account;"
 echo ''
-echo '30 - check cannot access audit_trail - expected outcome: fail'
+echo '34 - check cannot access audit_trail - expected outcome: fail'
 PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM audit_trail;"
 echo ''
-echo '31 - check transactions_record table view - expected outcome: success'
+echo '35 - check transactions_record table view - expected outcome: success'
 PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM Teller_Transaction;"
 echo ''
-echo '32 - check employees table view - expected outcome: success'
+echo '36 - check employees table view - expected outcome: success'
 PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM Teller_Employee;"
 echo ''
-echo '33 - check cannot access users - expected outcome: fail'
+echo '37 - check cannot access users - expected outcome: fail'
 PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM users;"
 echo ''
-echo '34 - check cannot access user_roles - expected outcome: fail'
+echo '38 - check cannot access user_roles - expected outcome: fail'
 PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM user_roles;"
 echo ''
-echo '35 - check cannot access loan_information - expected outcome: fail'
+echo '39 - check cannot access loan_information - expected outcome: fail'
 PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM loan_information;"
 echo ''
 echo ''
 echo '----------------- Test Data as customers -----------------'
 echo ''
 echo ''
-echo '36 - withdraw function - expected outcome: success'
+echo '40 - withdraw function - expected outcome: success'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT "withdraw"(1);"
 echo ''
-echo '37 - deposit function - expected outcome: success'
+echo '41 - deposit function - expected outcome: success'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT "deposit"(1);"
 echo ''
-echo '38 - check customer table view - expected outcome: success'
+echo '42 - check customer table view - expected outcome: success'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM Customer_Customer;"
 echo ''
-echo '39 - check account table view - expected outcome: success'
+echo '43 - check account table view - expected outcome: success'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM Customer_Account;"
 echo ''
-echo '40 - check cannot access audit_trail - expected outcome: fail'
+echo '44 - check cannot access audit_trail - expected outcome: fail'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM audit_trail;"
 echo ''
-echo '41 - check transactions_record table view - expected outcome: success'
+echo '45 - check transactions_record table view - expected outcome: success'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM Customer_Transactions;"
 echo ''
-echo '42 - check employees table view - expected outcome: fail'
+echo '46 - check employees table view - expected outcome: fail'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM employees;"
 echo ''
-echo '43 - check cannot access users - expected outcome: fail'
+echo '47 - check cannot access users - expected outcome: fail'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM users;"
 echo ''
-echo '44 - check cannot access user_roles - expected outcome: fail'
+echo '48 - check cannot access user_roles - expected outcome: fail'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM user_roles;"
 echo ''
-echo '45 - check loan_information table view - expected outcome: success'
+echo '49 - check loan_information table view - expected outcome: success'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM Customer_Loan;"
 echo ''
 echo ''

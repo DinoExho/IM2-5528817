@@ -49,16 +49,16 @@ echo '9 - create customer - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
 echo ''
 echo '10 - create account - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c INSERT INTO account (customer_id, account_type, balance, open_date, account_status) VALUES (1, 'Savings', 1000.00, '2023-10-27', 'Active');;"
 echo ''
 echo '11 - create account - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO account (customer_id, account_type, balance, open_date, account_status) VALUES (2, 'Shopping', 50.00, '2024-04-12', 'Active');"
 echo ''
 echo '12 - create transaction_record - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO transaction_records (account_id, transaction_type, transaction_timestamp, amount, payment_method, description) VALUES (1, 'Deposit', NOW(), 500.00, 'Cash', 'Cash deposit');"
 echo ''
 echo '13 - create loan_information - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO loan_information (account_id, original_amount, interest_rate, loan_term, start_date, end_date) VALUES (1, 50000.00, 0.05, '5 years', '2023-10-27', '2028-10-27');"
 echo ''
 echo '14 - view account audit trail - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "account_audit_trail"(1);"
@@ -72,8 +72,14 @@ echo ''
 echo '17 - check audit_trail table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Transaction;"
 echo ''
-echo '18 - check cannot insert/update/delete audit trail - expected outcome: fail'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM audit_trail";
+echo '18 - check cannot insert audit trail - expected outcome: fail'
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO audit_trail (account_id, audit_timestamp, action_details, affected_record, old_data, new_data) VALUES (1, NOW(), 'Account balance updated', 'account', '1000.00', '1500.00');";
+echo ''
+echo '18.3 - check cannot update audit trail - expected outcome: fail'
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SET action_details = 'Account balance updated', old_data = '900.00', new_data = '1600.00' WHERE audit_id = 1;";
+echo ''
+echo '18.6 - check cannot delete audit trail - expected outcome: fail'
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM audit_trail WHERE audit_id = 1;";
 echo ''
 echo '19 - check transactions_record table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_AuditTrail;"

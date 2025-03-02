@@ -76,7 +76,7 @@ echo '18 - check cannot insert audit trail - expected outcome: fail'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO audit_trail (account_id, audit_timestamp, action_details, affected_record, old_data, new_data) VALUES (1, NOW(), 'Account balance updated', 'account', '1000.00', '1500.00');";
 echo ''
 echo '18.3 - check cannot update audit trail - expected outcome: fail'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SET action_details = 'Account balance updated', old_data = '900.00', new_data = '1600.00' WHERE audit_id = 1;";
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SET action_details = 'Account balance updated','900.00','1600.00', WHERE audit_id = 1;";
 echo ''
 echo '18.6 - check cannot delete audit trail - expected outcome: fail'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM audit_trail WHERE audit_id = 1;";

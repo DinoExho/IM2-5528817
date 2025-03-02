@@ -129,7 +129,7 @@ echo '----------------- Test Data as teller -----------------'
 echo ''
 echo ''
 echo '32 - check cannot access customers - expected outcome: fail'
-PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM customer;"
+PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM customers;"
 echo ''
 echo '33 - check account table view - expected outcome: success'
 PGPASSWORD=AN8jv2uZvyaJ psql -U cjohnson -d 5528817 -c "SELECT * FROM Teller_Account;"

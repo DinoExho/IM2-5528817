@@ -21,7 +21,7 @@ GRANT USAGE ON SCHEMA public TO loan_officers;
 GRANT USAGE ON SCHEMA public TO tellers;
 GRANT USAGE ON SCHEMA public TO customers;
 
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO bank_managers;
+GRANT USAGE, SELECT ON ALL SEQUENCES TO bank_managers;
 
 -------------------- TABLES --------------------
 CREATE TABLE "account" (

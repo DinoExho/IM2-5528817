@@ -82,7 +82,7 @@ echo '18.6 - check cannot delete audit trail - expected outcome: fail'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "DELETE FROM audit_trail WHERE audit_id = 1;";
 echo ''
 echo '19 - check transactions_record table view - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_AuditTrail;"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Transaction;"
 echo ''
 echo '20 - check employees table view - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Employee;"

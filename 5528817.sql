@@ -21,6 +21,12 @@ GRANT USAGE ON SCHEMA public TO loan_officers;
 GRANT USAGE ON SCHEMA public TO tellers;
 GRANT USAGE ON SCHEMA public TO customers;
 
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO bank_managers;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO loan_officers;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO tellers;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO customers;
+
+
 -------------------- TABLES --------------------
 CREATE TABLE "account" (
   "account_id" serial NOT NULL,

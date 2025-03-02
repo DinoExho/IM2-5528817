@@ -188,6 +188,10 @@ CREATE OR REPLACE VIEW LoanOfficer_Account AS
 SELECT account_id, customer_id, account_type, balance, open_date, account_status
 FROM account;
 
+CREATE OR REPLACE VIEW Teller_Account AS
+SELECT account_id
+FROM account;
+
 CREATE OR REPLACE VIEW Customer_Account AS
 SELECT account_id, customer_id, balance, open_date, account_status
 FROM account;

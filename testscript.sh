@@ -49,7 +49,7 @@ echo '9 - create customer - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
 echo ''
 echo '10 - create account - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c INSERT INTO account (customer_id, account_type, balance, open_date, account_status) VALUES (1, 'Savings', 1000.00, '2023-10-27', 'Active');;"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO account (customer_id, account_type, balance, open_date, account_status) VALUES (1, 'Savings', 1000.00, '2023-10-27', 'Active');"
 echo ''
 echo '11 - create account - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO account (customer_id, account_type, balance, open_date, account_status) VALUES (2, 'Shopping', 50.00, '2024-04-12', 'Active');"

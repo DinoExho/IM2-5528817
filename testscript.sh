@@ -49,34 +49,34 @@ echo '9 - create customer - expected outcome: success'
 PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "INSERT INTO customers (forename, surname, dob, email, phone, address, user_id) VALUES ('Patricia', 'Brown', '1978-03-18', 'patricia.brown@example.com', '07956 789012', '789 Oak Lane, Anytown', 4);"
 echo ''
 echo '10 - view account audit trail - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "account_audit_trail"(1);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM account_audit_trail WHERE account_id = 1;"
 echo ''
 echo '11 - check customer table view - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "BankManager_Customer"(1);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Customer WHERE customer_id = 1;"
 echo ''
 echo '12 - check account table view - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "BankManager_Account"(1);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Account WHERE account_id = 1;"
 echo ''
 echo '13 - check audit_trail table view - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "BankManager_Transaction"(1);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Transaction WHERE transaction_id = 1;"
 echo ''
 echo '14 - check cannot insert/update/delete audit trail - expected outcome: fail'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM audit_trail;"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM audit_trail";
 echo ''
 echo '15 - check transactions_record table view - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "BankManager_AuditTrail"(1);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_AuditTrail WHERE audit_id = 1;"
 echo ''
 echo '16 - check employees table view - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "BankManager_Employee"(1);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Employee WHERE employee_id = 1;"
 echo ''
 echo '17 - check users table view - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "BankManager_Users"(1);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Users WHERE user_id = 1;"
 echo ''
 echo '18 - check user_roles table view - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "BankManager_UserRoles"(1);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_UserRoles WHERE user_role_id = 1;"
 echo ''
 echo '19 - check loan_information table view - expected outcome: success'
-PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT "BankManager_Loan"(1);"
+PGPASSWORD=WLNHj3RdEQ5F psql -U bjones -d 5528817 -c "SELECT * FROM BankManager_Loan WHERE loan_id = 1;"
 echo ''
 echo ''
 echo '----------------- Test Data as loan officer -----------------'

@@ -157,10 +157,10 @@ echo '----------------- Test Data as customers -----------------'
 echo ''
 echo ''
 echo '40 - withdraw function - expected outcome: success'
-PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT "withdraw"(1);"
+PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT "withdraw"(1, 20);"
 echo ''
 echo '41 - deposit function - expected outcome: success'
-PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT "deposit"(1);"
+PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT "deposit"(1,100);"
 echo ''
 echo '42 - check customer table view - expected outcome: success'
 PGPASSWORD=GkbfZ7Z7TD8j psql -U pbrown -d 5528817 -c "SELECT * FROM Customer_Customer;"

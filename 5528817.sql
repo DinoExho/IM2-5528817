@@ -1,5 +1,8 @@
 CREATE ROLE customers;
+
 CREATE ROLE bank_managers;
+ALTER ROLE bank_managers WITH BYPASSRLS;
+
 CREATE ROLE tellers;
 CREATE ROLE loan_officers;
 

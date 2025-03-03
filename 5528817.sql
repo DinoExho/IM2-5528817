@@ -411,13 +411,13 @@ EXECUTE FUNCTION user_trigger();
 -------------------- FUNCTIONS SECURITY --------------------
 
 REVOKE ALL ON FUNCTION account_audit_trail(account_id INT) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION account_audit_trail(account_id INT) to bank_managers;
+GRANT ALL ON FUNCTION account_audit_trail(account_id INT) to bank_managers;
 
 REVOKE ALL ON FUNCTION withdraw(p_account_id INT, p_amount NUMERIC) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION withdraw(p_account_id INT, p_amount NUMERIC) to customers;
+GRANT ALL ON FUNCTION withdraw(p_account_id INT, p_amount NUMERIC) to customers;
 
 REVOKE ALL ON FUNCTION deposit(p_account_id INT, p_amount NUMERIC) FROM PUBLIC; 
-GRANT SELECT ON FUNCTION deposit(p_account_id INT, p_amount NUMERIC) to customers;
+GRANT ALL ON FUNCTION deposit(p_account_id INT, p_amount NUMERIC) to customers;
 ------------------------------------------------------
 
 -------------------- AUDIT LOGGER --------------------
